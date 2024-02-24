@@ -91,14 +91,14 @@ body {
 """, unsafe_allow_html=True)
 
 # Create a new plot with a title and axis labels
-p = bokeh.plotting.figure(title="A scatterplot showing heart rate over time.",
+p = bokeh.plotting.figure(title="A line plot showing heart rate over time.",
            x_axis_label='Timestamp', 
            y_axis_label='Heart Rate',
            x_axis_type='datetime', # Assuming 'timestamp' is in datetime format
            tools="") # Start with no tools, add them as needed
 
-# Add a scatter renderer with a size, color, and alpha
-p.line(x='timestamp', y='heart_rate', source=df_monitoring, size=10, color="navy", alpha=0.5)
+# Add a line renderer
+p.line(x='timestamp', y='heart_rate', source=df_monitoring)
 
 # Add Pan and Wheel Zoom tools
 p.add_tools(bokeh.models.PanTool(dimensions="width"))  # Restrict to horizontal pan
