@@ -94,7 +94,7 @@ fig1.update_layout(
 )
 config = {'scrollZoom': True,
           'displaylogo': False,
-          'renderMode': 'svg',}
+          'renderMode': 'webgl',}
 st.plotly_chart(fig1, use_container_width=True, config=config)
 
 """Altair Plot"""
