@@ -45,12 +45,12 @@ fig1 = px.line(df_monitoring.tail(num_points_displayed), x="timestamp", y="heart
                  title="Plotly title")
 #fig1.update_layout(editable=False)
 # Add x-axis range slider
-# fig1.update_layout(xaxis=dict(rangeslider=dict(visible=False)))
+fig1.update_layout(xaxis=dict(rangeslider=dict(visible=False)))
 fig1.update_yaxes(fixedrange=True)  # Lock the y-axis
 fig1.update_layout(
     dragmode='pan',  # zoom, pan, select, lasso
 )
-config = {'scrollZoom': False,
+config = {'scrollZoom': True,
           'displaylogo': False}
 st.plotly_chart(fig1, use_container_width=True, config=config)
 
