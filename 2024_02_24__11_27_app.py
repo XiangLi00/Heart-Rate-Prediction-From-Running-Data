@@ -78,6 +78,7 @@ st.vega_lite_chart(df_monitoring, spec=spec, use_container_width=True)
 
 
 """Bokeh Plot"""
+from bokeh import plotting
 # Create a new plot with a title and axis labels
 p = bokeh.plotting.figure(title="A scatterplot showing heart rate over time.",
            x_axis_label='Timestamp', 
@@ -86,11 +87,11 @@ p = bokeh.plotting.figure(title="A scatterplot showing heart rate over time.",
            tools="") # Start with no tools, add them as needed
 
 # Add a scatter renderer with a size, color, and alpha
-p.scatter(x='timestamp', y='heart_rate', source=df_monitoring, size=10, color="navy", alpha=0.5)
+p.scatter(x='timestamp', y='heart_rate', source=df, size=10, color="navy", alpha=0.5)
 
 # Add Pan and Wheel Zoom tools
-p.add_tools(bokeh.modelsPanTool(dimensions="width"))  # Restrict to horizontal pan
-p.add_tools(bokeh.modelsWheelZoomTool(dimensions="width"))  # Restrict to horizontal zoom
+p.add_tools(bokeh.models.PanTool(dimensions="width"))  # Restrict to horizontal pan
+p.add_tools(bokeh.models.WheelZoomTool(dimensions="width"))  # Restrict to horizontal zoom
 
 # Show the results in Streamlit
 st.bokeh_chart(p, use_container_width=True)
