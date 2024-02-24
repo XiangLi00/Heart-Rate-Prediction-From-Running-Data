@@ -45,7 +45,37 @@ fig1 = px.line(df_monitoring.tail(num_points_displayed), x="timestamp", y="heart
                  title="Plotly title")
 #fig1.update_layout(editable=False)
 # Add x-axis range slider
-fig1.update_layout(xaxis=dict(rangeslider=dict(visible=True)))
+#fig1.update_layout(xaxis=dict(rangeslider=dict(visible=True)))
+fig1.update_layout(
+    xaxis=dict(
+        rangeselector=dict(
+            buttons=list([
+                dict(count=1,
+                     label="1m",
+                     step="month",
+                     stepmode="backward"),
+                dict(count=6,
+                     label="6m",
+                     step="month",
+                     stepmode="backward"),
+                dict(count=1,
+                     label="YTD",
+                     step="year",
+                     stepmode="todate"),
+                dict(count=1,
+                     label="1y",
+                     step="year",
+                     stepmode="backward"),
+                dict(step="all")
+            ])
+        ),
+        rangeslider=dict(
+            visible=True
+        ),
+        type="date"
+    )
+)
+
 fig1.update_yaxes(fixedrange=True)  # Lock the y-axis
 fig1.update_layout(
     dragmode='pan',  # zoom, pan, select, lasso
