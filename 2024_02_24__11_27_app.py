@@ -95,9 +95,8 @@ fig1.update_layout(
 
 renderMode = st.text_input("Render Model", "webgl")
 config = {'scrollZoom': True,
-          'displaylogo': False,
-          'renderMode': renderMode}
-st.plotly_chart(fig1, use_container_width=True, config=config)
+          'displaylogo': False}
+st.plotly_chart(fig1, use_container_width=True, config=config, renderMode=renderMode)
 
 """Altair Plot"""
 st.scatter_chart(data=df_monitoring.tail(1000), x="timestamp", y="heart_rate")
