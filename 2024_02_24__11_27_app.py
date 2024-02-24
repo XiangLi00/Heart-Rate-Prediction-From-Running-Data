@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import importlib
 import os
 import sqlite3
 import sys
@@ -13,23 +14,13 @@ import seaborn as sns
 import streamlit as st
 # from ydata_profiling import ProfileReport
 
-# Get project root folder
-project_root_folder = os.getcwd() # r'd:\OneDrive\7Temporary\Coding\2024_02_20_Garmin'
-print(f"project_root_folder: {project_root_folder}")
-sys.path.append(project_root_folder)    # project root folder
-#sys.path.append(os.path.join(project_root_folder, 'streamlit'))    
-
-st.title("Empty")
-
-# from streamlit._2024_02_24__11_28_monitoring_hr_different_plotting_libs import page
-import bcd
-from bcd import page
-
 from utils.helper_load_df import load_df, print_column_info_of_all_tables, get_column_info_of_specific_table, generate_report
 
-print(os.listdir(os.path.join(project_root_folder)))
+# Append project path to system path
+print(f"Project root folder: {os.getcwd()}")
+sys.path.append(os.getcwd())  
 
 
-import abc
-
-abc.page()
+module_name = 'pages._2024_02_24__11_28_monitoring_hr_different_plotting_libs'
+module = importlib.import_module(module_name)
+module.page()

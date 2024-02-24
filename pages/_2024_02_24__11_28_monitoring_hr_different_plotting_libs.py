@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import importlib
 import os
 import sqlite3
 import sys
@@ -13,9 +14,11 @@ import seaborn as sns
 import streamlit as st
 # from ydata_profiling import ProfileReport
 
-project_root_folder = os.getcwd()   # r'd:\OneDrive\7Temporary\Coding\2024_02_20_Garmin'
-sys.path.append(project_root_folder)    # project root folder
 from utils.helper_load_df import load_df, print_column_info_of_all_tables, get_column_info_of_specific_table, generate_report
+
+# Append project path to system path
+print(f"Project root folder: {os.getcwd()}")
+sys.path.append(os.getcwd())  
 
 
 def page():
@@ -32,6 +35,8 @@ def page():
     st.caption("Caption")
     st.text("Text")
     st.write("Hello World!")
+
+    project_root_folder = os.getcwd()
 
     root_path_db = os.path.join(project_root_folder, 'data')
     print(root_path_db)
