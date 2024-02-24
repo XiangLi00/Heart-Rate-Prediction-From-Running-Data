@@ -51,8 +51,7 @@ fig1.update_layout(
     dragmode='pan',  # zoom, pan, select, lasso
 )
 config = {'scrollZoom': True}
-fig1.show(config=config)
-st.plotly_chart(fig1, use_container_width=True)
+st.plotly_chart(fig1, use_container_width=True, config=config)
 
 """Altair Plot"""
 st.scatter_chart(data=df_monitoring.tail(1000), x="timestamp", y="heart_rate")
