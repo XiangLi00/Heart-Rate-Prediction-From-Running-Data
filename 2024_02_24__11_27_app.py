@@ -15,12 +15,17 @@ import streamlit as st
 
 # Get project root folder
 project_root_folder = os.getcwd() # r'd:\OneDrive\7Temporary\Coding\2024_02_20_Garmin'
+print(f"project_root_folder: {project_root_folder}")
 sys.path.append(project_root_folder)    # project root folder
-sys.path.append(os.path.join(project_root_folder, 'streamlit'))    
+#sys.path.append(os.path.join(project_root_folder, 'streamlit'))    
 
 # from streamlit._2024_02_24__11_28_monitoring_hr_different_plotting_libs import page
-import abc
+import bcd
+from bcd import page
 
 from utils.helper_load_df import load_df, print_column_info_of_all_tables, get_column_info_of_specific_table, generate_report
 
-abc.page()
+print(os.listdir(os.path.join(project_root_folder)))
+
+
+import abc
