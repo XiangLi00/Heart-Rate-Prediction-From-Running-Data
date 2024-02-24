@@ -148,7 +148,8 @@ def load_df(
     """
 
     # Get the column names and data types for the specified table
-    dict_table_column_info = get_column_info_of_specific_table(db_name=db_name, table_name=table_name, root_path_db=root_path_db)
+    dict_table_column_info = get_column_info_of_specific_table(db_name=db_name, table_name=table_name, root_path_db="abcvleg")
+
     #pinf('dict_table_column_info')
     datetime_column_names = [column_name for (column_name, data_type) in dict_table_column_info.items() if data_type == 'DATETIME']
     date_column_names = [column_name for (column_name, data_type) in dict_table_column_info.items() if data_type == 'DATE']
