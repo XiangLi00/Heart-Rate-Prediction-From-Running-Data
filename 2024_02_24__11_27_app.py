@@ -30,5 +30,6 @@ from utils.helper_load_df import load_df, print_column_info_of_all_tables, get_c
 print(os.listdir(os.path.join(project_root_folder)))
 
 
-
 import abc
+
+abc.page()
