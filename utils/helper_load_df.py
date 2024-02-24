@@ -7,7 +7,6 @@ import pandas as pd
 from pandas_profiling import ProfileReport
 
 
-
 def print_column_info_of_all_tables(
     db_name: str,
     print_columns: bool = True,
@@ -91,6 +90,7 @@ def get_column_info_of_specific_table(
 # get_column_info_of_specific_table('summary.db', 'weeks_summary')
 # print_column_info_of_all_tables('garmin_monitoring.db', print_columns=True)
 
+
 def remove_empty_nan_or_zero_rows(df: pd.DataFrame) -> pd.DataFrame:
     """Remove rows where all values are nan, zero or empty.
 
@@ -122,6 +122,7 @@ def remove_empty_nan_or_zero_rows(df: pd.DataFrame) -> pd.DataFrame:
 
     return df
 
+
 @st.cache_data
 def load_df(
         db_name: str,
@@ -148,9 +149,9 @@ def load_df(
     """
 
     # Get the column names and data types for the specified table
-    dict_table_column_info = get_column_info_of_specific_table(db_name=db_name, table_name=table_name, root_path_db="abcvleg")
+    dict_table_column_info = get_column_info_of_specific_table(db_name=db_name, table_name=table_name, root_path_db=root_path_db)
 
-    #pinf('dict_table_column_info')
+    # pinf('dict_table_column_info')
     datetime_column_names = [column_name for (column_name, data_type) in dict_table_column_info.items() if data_type == 'DATETIME']
     date_column_names = [column_name for (column_name, data_type) in dict_table_column_info.items() if data_type == 'DATE']
     time_column_names = [column_name for (column_name, data_type) in dict_table_column_info.items() if data_type == 'TIME']
@@ -161,9 +162,9 @@ def load_df(
 
         # Read the SQL query with the updated variables
         df = pd.read_sql(
-            f"SELECT * FROM {table_name}", #WHERE first_day > '2023-11-25'",
+            f"SELECT * FROM {table_name}",  # WHERE first_day > '2023-11-25'",
             con,
-            parse_dates = datetime_column_names + date_column_names  # Parse datetime and date as datetime64
+            parse_dates=datetime_column_names + date_column_names  # Parse datetime and date as datetime64
         )
         df.name = table_name
 
@@ -177,6 +178,7 @@ def load_df(
     print(f"Loaded {table_name} from {db_name}. Shape: {df.shape}. ")
 
     return df
+
 
 def generate_report(df: pd.DataFrame):
     """Generates a profiling report for a DataFrame and saves it as an HTML file.
