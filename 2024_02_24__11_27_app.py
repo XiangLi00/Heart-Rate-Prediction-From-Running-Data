@@ -39,8 +39,9 @@ if False:
 
 """Plotly Plot"""
 st.write("Plotly Plot")
-st.empty()
-fig1 = px.line(df_monitoring.tail(1000), x="timestamp", y="heart_rate",
+
+num_points_displayed = st.number_input("Number of points to display", min_value=1, max_value=100000, value=1000, step=1)
+fig1 = px.line(df_monitoring.tail(num_points_displayed), x="timestamp", y="heart_rate",
                  title="Plotly title")
 #fig1.update_layout(editable=False)
 # Add x-axis range slider
