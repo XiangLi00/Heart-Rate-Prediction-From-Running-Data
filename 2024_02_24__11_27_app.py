@@ -26,6 +26,7 @@ st.text("Text")
 st.write("Hello World!")
 
 root_path_db = os.path.join(project_root_folder, 'data')
+print(root_path_db)
 df_monitoring = load_df('garmin_monitoring.db', 'monitoring_hr', root_path_db=root_path_db).tail(10000)
 
 if False:
