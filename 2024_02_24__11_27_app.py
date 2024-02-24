@@ -23,4 +23,4 @@ sys.path.append(os.getcwd())
 
 module_name = 'pages._2024_02_24__11_28_monitoring_hr_different_plotting_libs'
 module = importlib.import_module(module_name)
-module.page()
+# module.page()
