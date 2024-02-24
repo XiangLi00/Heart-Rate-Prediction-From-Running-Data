@@ -92,9 +92,11 @@ fig1.update_yaxes(fixedrange=True)  # Lock the y-axis
 fig1.update_layout(
     dragmode='pan',  # zoom, pan, select, lasso
 )
+
+renderMode = st.text_input("Render Model", "webgl")
 config = {'scrollZoom': True,
           'displaylogo': False,
-          'renderMode': 'webgl',}
+          'renderMode': renderMode}
 st.plotly_chart(fig1, use_container_width=True, config=config)
 
 """Altair Plot"""
