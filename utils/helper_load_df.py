@@ -4,7 +4,6 @@ import sqlite3
 import streamlit as st
 
 import pandas as pd
-from pandas_profiling import ProfileReport
 
 
 def print_column_info_of_all_tables(
