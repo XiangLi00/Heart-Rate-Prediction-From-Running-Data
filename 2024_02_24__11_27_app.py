@@ -48,7 +48,27 @@ fig1.update_yaxes(fixedrange=True)  # Lock the y-axis
 fig1.update_layout(
     dragmode='pan',  # zoom, pan, select, lasso
 )
-st.plotly_chart(fig1, use_container_width=True, update_mode='transform')
+st.plotly_chart(fig1, use_container_width=True)
 
 """Altair Plot"""
 st.scatter_chart(data=df_monitoring.tail(10000), x="timestamp", y="heart_rate")
+
+
+"""VEga Lite Plot"""
+# Convert DataFrame to JSON
+data_json = df_monitoring.to_dict(orient='records')
+
+# Vega-Lite spec
+vega_spec = {
+    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+    "description": "A scatterplot showing heart rate over time.",
+    "data": {
+        "values": data_json
+    },
+    "mark": "point",
+    "encoding": {
+        "x": {"field": "timestamp", "type": "temporal", "title": "Timestamp"},
+        "y": {"field": "heart_rate", "type": "quantitative", "title": "Heart Rate"}
+    }
+}
+st.vega_lite_chart(vega_spec, use_container_width=True)
