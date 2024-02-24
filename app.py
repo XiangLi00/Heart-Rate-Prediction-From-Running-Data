@@ -21,8 +21,10 @@ print(f"Project root folder: {os.getcwd()}")
 sys.path.append(os.getcwd())  
 
 
-st.title('Main app')
 
-module_name = 'pages._2024_02_24__11_28_monitoring_hr_different_plotting_libs'
+
+module_name = ['pages._2024_02_24__11_28_monitoring_hr_different_plotting_libs','_2024_02_24__activities'][1]
 module = importlib.import_module(module_name)
 module.page()
+
+st.header(module_name)
