@@ -76,6 +76,7 @@ def get_column_info_of_specific_table(
         dict: A dictionary with column names as keys and data types as values.
     """
     path_db = os.path.join(root_path_db, db_name)
+    print("root path db in get_column_info_of_specific_table:", root_path_db)
 
     with sqlite3.connect(path_db) as con:
         cursor = con.cursor()
