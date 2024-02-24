@@ -25,8 +25,8 @@ st.caption("Caption")
 st.text("Text")
 st.write("Hello World!")
 
-
-df_monitoring = load_df('garmin_monitoring.db', 'monitoring_hr').tail(10000)
+root_path_db = os.path.join(project_root_folder, 'data')
+df_monitoring = load_df('garmin_monitoring.db', 'monitoring_hr', root_path_db=root_path_db).tail(10000)
 
 if False:
     st.dataframe(df_monitoring.head(100))
