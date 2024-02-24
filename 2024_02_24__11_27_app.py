@@ -73,4 +73,5 @@ spec = {
             "encodings": ["x"]
         }
     }
+}
 st.vega_lite_chart(df_monitoring, spec=spec, use_container_width=True)
