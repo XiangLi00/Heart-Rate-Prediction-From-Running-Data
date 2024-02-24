@@ -93,7 +93,8 @@ fig1.update_layout(
     dragmode='pan',  # zoom, pan, select, lasso
 )
 config = {'scrollZoom': True,
-          'displaylogo': False}
+          'displaylogo': False,
+          'renderMode': 'svg',}
 st.plotly_chart(fig1, use_container_width=True, config=config)
 
 """Altair Plot"""
