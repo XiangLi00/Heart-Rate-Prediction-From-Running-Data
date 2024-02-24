@@ -49,7 +49,6 @@ fig1.update_layout(xaxis=dict(rangeslider=dict(visible=True)))
 fig1.update_yaxes(fixedrange=True)  # Lock the y-axis
 fig1.update_layout(
     dragmode='pan',  # zoom, pan, select, lasso
-    uirevision="foo",
 )
 st.plotly_chart(fig1, use_container_width=True)
 
