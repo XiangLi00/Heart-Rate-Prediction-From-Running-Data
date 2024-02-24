@@ -42,8 +42,8 @@ fig1 = px.line(df_monitoring, x="timestamp", y="heart_rate",
                  title="Plotly title")
 #fig1.update_layout(editable=False)
 # Add x-axis range slider
-#fig1.update_layout(xaxis=dict(rangeslider=dict(visible=True)))
-#fig1.update_yaxes(fixedrange=True)  # Lock the y-axis
+fig1.update_layout(xaxis=dict(rangeslider=dict(visible=True)))
+fig1.update_yaxes(fixedrange=True)  # Lock the y-axis
 fig1.update_layout(
     dragmode='pan',  # zoom, pan, select, lasso
 )
