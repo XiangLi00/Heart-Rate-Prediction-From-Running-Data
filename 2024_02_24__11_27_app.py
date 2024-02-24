@@ -22,3 +22,5 @@ sys.path.append(os.path.join(project_root_folder, 'streamlit'))
 import abc
 
 from utils.helper_load_df import load_df, print_column_info_of_all_tables, get_column_info_of_specific_table, generate_report
+
+abc.page()
