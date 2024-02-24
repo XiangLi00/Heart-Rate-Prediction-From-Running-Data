@@ -86,7 +86,9 @@ def get_column_info_of_specific_table(
             # Create a dictionary with column names as keys and data types as values
             dict_column_name_and_type = {column[1]: column[2] for column in columns}  
     except sqlite3.OperationalError as e:
-        raise sqlite3.OperationalError(f"root_path_db: {root_path_db} db_name: {db_name}, table_name: {table_name}")
+        error_message = f"Error in get_column_info_of_specific_table: {e}. root_path_db: {root_path_db}, db_name: {db_name}, table_name: {table_name}"
+        raise sqlite3.OperationalError(error_message) from e
+        #raise sqlite3.OperationalError(f"root_path_db: {root_path_db} db_name: {db_name}, table_name: {table_name}")
         
 
     return dict_column_name_and_type
