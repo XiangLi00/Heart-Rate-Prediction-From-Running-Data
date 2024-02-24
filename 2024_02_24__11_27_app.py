@@ -67,8 +67,10 @@ spec = {
         "y": {"field": "heart_rate", "type": "quantitative", "title": "Heart Rate"}
     },
     "selection": {
-    "grid": {
-        "type": "interval", 
-        "bind": "scales",
+        "x_zoom_pan": {
+            "type": "interval",
+            "bind": "scales",
+            "encodings": ["x"]
+        }
     }
 st.vega_lite_chart(df_monitoring, spec=spec, use_container_width=True)
