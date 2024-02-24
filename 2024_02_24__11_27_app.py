@@ -50,18 +50,8 @@ fig1.update_yaxes(fixedrange=True)  # Lock the y-axis
 fig1.update_layout(
     dragmode='pan',  # zoom, pan, select, lasso
 )
-# Custom Zoom Buttons
-if st.button("Zoom In"):
-    # Zoom in by reducing the number of points displayed
-    num_points_displayed = min(num_points_displayed + 100, len(df_monitoring))
-    fig1.data[0].x = df_monitoring.tail(num_points_displayed)["timestamp"]
-    st.write(f"Zoomed In. Displaying {num_points_displayed} points.")
-
-if st.button("Zoom Out"):
-    # Zoom out by increasing the number of points displayed
-    num_points_displayed = max(num_points_displayed - 100, 1)
-    fig1.data[0].x = df_monitoring.tail(num_points_displayed)["timestamp"]
-    st.write(f"Zoomed Out. Displaying {num_points_displayed} points.")
+config = {'scrollZoom': True}
+fig1.show(config=config)
 st.plotly_chart(fig1, use_container_width=True)
 
 """Altair Plot"""
