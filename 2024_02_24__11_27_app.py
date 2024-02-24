@@ -44,9 +44,11 @@ fig1 = px.line(df_monitoring, x="timestamp", y="heart_rate",
 #fig1.update_layout(editable=False)
 # Add x-axis range slider
 fig1.update_layout(xaxis=dict(rangeslider=dict(visible=True)))
+
 fig1.update_yaxes(fixedrange=True)  # Lock the y-axis
 fig1.update_layout(
     dragmode='pan',  # zoom, pan, select, lasso
+    uirevision="foo",
 )
 st.plotly_chart(fig1, use_container_width=True)
 
@@ -79,7 +81,7 @@ st.vega_lite_chart(df_monitoring, spec=spec, use_container_width=True)
 
 """Bokeh Plot"""
 from bokeh import plotting
-
+# Disable the default browser zoom behavior by adding the following CSS to the Streamlit app:
 st.markdown("""
 <style>
 body {
