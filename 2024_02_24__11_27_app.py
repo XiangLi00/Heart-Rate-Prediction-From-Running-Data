@@ -4,9 +4,7 @@ import sqlite3
 import sys
 import time
 
-import fitfile
-import garmindb
-import gpxpy
+
 from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
