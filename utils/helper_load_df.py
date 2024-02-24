@@ -77,14 +77,18 @@ def get_column_info_of_specific_table(
     """
     path_db = os.path.join(root_path_db, db_name)
     print("root path db in get_column_info_of_specific_table:", root_path_db)
+    try:
+        with sqlite3.connect(path_db) as con:
+            cursor = con.cursor()
+            cursor.execute(f"PRAGMA table_info({table_name});")
+            columns = cursor.fetchall()  # List with elements like (0, 'first_day', 'DATE', 1, None, 1)
 
-    with sqlite3.connect(path_db) as con:
-        cursor = con.cursor()
-        cursor.execute(f"PRAGMA table_info({table_name});")
-        columns = cursor.fetchall()  # List with elements like (0, 'first_day', 'DATE', 1, None, 1)
-
-        # Create a dictionary with column names as keys and data types as values
-        dict_column_name_and_type = {column[1]: column[2] for column in columns}  
+            # Create a dictionary with column names as keys and data types as values
+            dict_column_name_and_type = {column[1]: column[2] for column in columns}  
+    except sqlite3.OperationalError as e:
+        print(f"Error in get_column_info_of_specific_table: {e}. root_path_db: {root_path_db} db_name: {db_name}, table_name: {table_name}")
+        raise e
+        
 
     return dict_column_name_and_type
 
