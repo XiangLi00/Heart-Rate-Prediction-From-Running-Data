@@ -79,6 +79,15 @@ st.vega_lite_chart(df_monitoring, spec=spec, use_container_width=True)
 
 """Bokeh Plot"""
 from bokeh import plotting
+
+st.markdown("""
+<style>
+body {
+    zoom: 1 !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 # Create a new plot with a title and axis labels
 p = bokeh.plotting.figure(title="A scatterplot showing heart rate over time.",
            x_axis_label='Timestamp', 
