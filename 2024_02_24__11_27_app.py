@@ -54,21 +54,21 @@ st.plotly_chart(fig1, use_container_width=True)
 st.scatter_chart(data=df_monitoring.tail(10000), x="timestamp", y="heart_rate")
 
 
-"""VEga Lite Plot"""
+"""Vega Lite Plot"""
 # Convert DataFrame to JSON
-data_json = df_monitoring.to_dict(orient='records')
+# data_json = df_monitoring.to_dict(orient='records')
 
 # Vega-Lite spec
-vega_spec = {
-    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+spec = {
     "description": "A scatterplot showing heart rate over time.",
-    "data": {
-        "values": data_json
-    },
     "mark": "point",
     "encoding": {
         "x": {"field": "timestamp", "type": "temporal", "title": "Timestamp"},
         "y": {"field": "heart_rate", "type": "quantitative", "title": "Heart Rate"}
+    },
+    "selection": {
+    "grid": {
+        "type": "interval", 
+        "bind": "scales",
     }
-}
-st.vega_lite_chart(vega_spec, use_container_width=True)
+st.vega_lite_chart(df_monitoring, spec=spec, use_container_width=True)
