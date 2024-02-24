@@ -50,7 +50,7 @@ fig1.update_yaxes(fixedrange=True)  # Lock the y-axis
 fig1.update_layout(
     dragmode='pan',  # zoom, pan, select, lasso
 )
-config = {'scrollZoom': True,
+config = {'scrollZoom': False,
           'displaylogo': False}
 st.plotly_chart(fig1, use_container_width=True, config=config)
 
