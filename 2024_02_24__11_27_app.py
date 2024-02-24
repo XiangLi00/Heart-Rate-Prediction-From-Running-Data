@@ -38,7 +38,7 @@ if False:
     st.line_chart(df_monitoring["heart_rate"].head(1000))
 
 st.write("Plotly Plot")
-fig1 = px.scatter(df_monitoring, x="timestamp", y="heart_rate",
+fig1 = px.line(df_monitoring, x="timestamp", y="heart_rate",
                  title="Plotly title")
 #fig1.update_layout(editable=False)
 # Add x-axis range slider
