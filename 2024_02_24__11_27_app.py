@@ -4,7 +4,7 @@ import sqlite3
 import sys
 import time
 
-
+import bokeh
 from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
@@ -75,3 +75,22 @@ spec = {
     }
 }
 st.vega_lite_chart(df_monitoring, spec=spec, use_container_width=True)
+
+
+"""Bokeh Plot"""
+# Create a new plot with a title and axis labels
+p = bokeh.plotting.figure(title="A scatterplot showing heart rate over time.",
+           x_axis_label='Timestamp', 
+           y_axis_label='Heart Rate',
+           x_axis_type='datetime', # Assuming 'timestamp' is in datetime format
+           tools="") # Start with no tools, add them as needed
+
+# Add a scatter renderer with a size, color, and alpha
+p.scatter(x='timestamp', y='heart_rate', source=df_monitoring, size=10, color="navy", alpha=0.5)
+
+# Add Pan and Wheel Zoom tools
+p.add_tools(bokeh.modelsPanTool(dimensions="width"))  # Restrict to horizontal pan
+p.add_tools(bokeh.modelsWheelZoomTool(dimensions="width"))  # Restrict to horizontal zoom
+
+# Show the results in Streamlit
+st.bokeh_chart(p, use_container_width=True)
