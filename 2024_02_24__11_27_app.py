@@ -87,7 +87,7 @@ p = bokeh.plotting.figure(title="A scatterplot showing heart rate over time.",
            tools="") # Start with no tools, add them as needed
 
 # Add a scatter renderer with a size, color, and alpha
-p.scatter(x='timestamp', y='heart_rate', source=df, size=10, color="navy", alpha=0.5)
+p.scatter(x='timestamp', y='heart_rate', source=df_monitoring, size=10, color="navy", alpha=0.5)
 
 # Add Pan and Wheel Zoom tools
 p.add_tools(bokeh.models.PanTool(dimensions="width"))  # Restrict to horizontal pan
