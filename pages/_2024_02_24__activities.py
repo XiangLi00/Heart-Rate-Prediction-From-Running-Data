@@ -53,6 +53,8 @@ def plot_specific_activity5(df_specific_activity: pd.DataFrame):
 
         - automatic screen height
     """
+    st.write("plot_specific_activity5")
+
     fig = make_subplots(rows=2, cols=1, shared_xaxes=True, shared_yaxes=False, 
                     specs=[[{"secondary_y": True}], [{"secondary_y": True}]])
     
