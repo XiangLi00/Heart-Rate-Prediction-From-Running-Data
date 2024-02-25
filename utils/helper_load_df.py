@@ -3,6 +3,7 @@ import os
 import sqlite3
 import streamlit as st
 
+import fitdecode
 import pandas as pd
 
 
@@ -206,3 +207,5 @@ def generate_report(df: pd.DataFrame):
     ProfileReport(df, title=f"Profiling Report {df.name}").to_file(path_df_profiling_report)
 
     print(f"Generated profiling report for {df.name}. Saved as {path_df_profiling_report}")
+
+
