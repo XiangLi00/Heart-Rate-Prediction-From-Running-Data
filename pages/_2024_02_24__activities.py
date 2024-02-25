@@ -91,12 +91,16 @@ def plot_specific_activity5(df_specific_activity: pd.DataFrame):
         dragmode='pan',  # zoom, pan, select, lasso
     )
     config = {'scrollZoom': True}
-    screen_height, screen_width = get_screen_height_and_width()
-    st.write(f"screen_height: {screen_height}, screen_width: {screen_width}")
-    fig.update_layout(height=screen_height*0.8)
+    if False:
+        screen_height, screen_width = get_screen_height_and_width()
+        st.write(f"screen_height: {screen_height}, screen_width: {screen_width}")
+        fig.update_layout(height=screen_height*0.8)
 
 
     st.plotly_chart(fig, use_container_width=True, config=config)
+
+    screen_height=streamlit_js_eval(js_expressions='screen.height', key='get_screen_height_javascript')
+    print(f"screen_height: {screen_height}")
 
 
 
