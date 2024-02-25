@@ -50,6 +50,8 @@ def page():
 def plot_specific_activity5(df_specific_activity: pd.DataFrame):
     """
         4 columns in 2 plots. works
+
+        - automatic screen height
     """
     fig = make_subplots(rows=2, cols=1, shared_xaxes=True, shared_yaxes=False, 
                     specs=[[{"secondary_y": True}], [{"secondary_y": True}]])
@@ -87,7 +89,7 @@ def plot_specific_activity5(df_specific_activity: pd.DataFrame):
     )
     config = {'scrollZoom': True}
     screen_height, screen_width = get_screen_height_and_width()
-    fig.update_layout(height=screen_height*0.8)
+    fig.update_layout(height=screen_height*2)
 
 
     st.plotly_chart(fig, use_container_width=True, config=config)
