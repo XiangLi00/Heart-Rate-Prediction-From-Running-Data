@@ -17,12 +17,12 @@ import streamlit as st
 from utils.helper_load_df import load_df, print_column_info_of_all_tables, get_column_info_of_specific_table, generate_report
 
 # Append project path to system path
-print(f"Project root folder: {os.getcwd()}")
+# print(f"Project root folder: {os.getcwd()}")
 sys.path.append(os.getcwd())  
 
 # Choose page to display
-module_name = ['pages._2024_02_24__11_28_monitoring_hr_different_plotting_libs','_2024_02_24__activities'][1]
-module = importlib.import_module(module_name)
+module_name = ['_2024_02_24__11_28_monitoring_hr_different_plotting_libs', '_2024_02_24__activities'][1]
+st.header(module_name)
+module = importlib.import_module("pages." + module_name)
 module.page()
 
-st.header(module_name)

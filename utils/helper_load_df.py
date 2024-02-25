@@ -132,8 +132,10 @@ def remove_empty_nan_or_zero_rows(df: pd.DataFrame) -> pd.DataFrame:
 def load_df(
         db_name: str,
         table_name: str,
-        root_path_db: str = r"C:\Users\Xiang\HealthData\DBs"
-):
+        root_path_db: str = r"C:\Users\Xiang\HealthData\DBs",
+        sql_selected_columns: str = "*",
+        sql_condition: str = "",
+) -> pd.DataFrame:
     """
     Load a DataFrame from a SQLite database table.
 
@@ -166,8 +168,12 @@ def load_df(
     with sqlite3.connect(path_db) as con:
 
         # Read the SQL query with the updated variables
+
+        # If we have no condition, then it is empty, else need to add WHERE
+        sql_where_statement = f"WHERE {sql_condition}" if sql_condition else ""
+
         df = pd.read_sql(
-            f"SELECT * FROM {table_name}",  # WHERE first_day > '2023-11-25'",
+            f"SELECT {sql_selected_columns} FROM {table_name} {sql_where_statement}",  # WHERE first_day > '2023-11-25'",
             con,
             parse_dates=datetime_column_names + date_column_names  # Parse datetime and date as datetime64
         )
