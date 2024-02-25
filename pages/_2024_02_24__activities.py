@@ -93,7 +93,7 @@ def plot_specific_activity5(df_specific_activity: pd.DataFrame):
 
     if True:
         screen_height, screen_width = get_screen_height_and_width()
-        st.write(f"screen_height: {screen_height}, screen_width: {screen_width}")
+        st.write(f"screen_height: {screen_height}, screen_width: {screen_width}, type_screen_hy: {type(screen_height)}")
 
         if screen_height is not None:
             fig.update_layout(height=screen_height*0.9)
