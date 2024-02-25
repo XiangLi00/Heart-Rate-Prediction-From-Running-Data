@@ -32,7 +32,6 @@ def page():
         First version, trying out plotly, altair, vega-lite, and bokeh.
         
     """
-    st.write("hello world")
 
     activity_id_selected = st.text_input("Enter activity_id", "14057922527")
 
