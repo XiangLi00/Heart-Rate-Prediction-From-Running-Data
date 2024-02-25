@@ -91,8 +91,9 @@ def plot_specific_activity5(df_specific_activity: pd.DataFrame):
         dragmode='pan',  # zoom, pan, select, lasso
     )
     config = {'scrollZoom': True}
-    screen_height, screen_width = 200,200 # get_screen_height_and_width()
-    fig.update_layout(height=screen_height*4)
+    screen_height, screen_width = get_screen_height_and_width()
+    st.write(f"screen_height: {screen_height}, screen_width: {screen_width}")
+    fig.update_layout(height=screen_height*0.8)
 
 
     st.plotly_chart(fig, use_container_width=True, config=config)
