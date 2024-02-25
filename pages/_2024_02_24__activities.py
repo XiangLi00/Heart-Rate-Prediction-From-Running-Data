@@ -45,7 +45,43 @@ def page():
     df_specific_activity["pace"] = 60 / (df_specific_activity["speed"])
     df_specific_activity["real_cadence"] = 2*(df_specific_activity["cadence"])
 
-    plot_specific_activity5(df_specific_activity)
+    plot_specific_activity6(df_specific_activity)
+
+def plot_specific_activity6(df_specific_activity: pd.DataFrame):
+    fig = make_subplots(rows=2, cols=1, shared_xaxes=True, shared_yaxes=False, 
+                    specs=[[{"secondary_y": True}], [{"secondary_y": True}]])
+
+    # Add HR trace
+    fig.add_trace(go.Scatter(x=df_specific_activity["timestamp"], y=df_specific_activity["hr"], mode='lines', name='HR'), 
+                row=1, col=1, secondary_y=False)
+    # Add Pace trace
+    fig.add_trace(go.Scatter(x=df_specific_activity["timestamp"], y=df_specific_activity["pace"], mode='lines', name='Pace'), 
+                row=1, col=1, secondary_y=True)
+    # Add Altitude trace
+    fig.add_trace(go.Scatter(x=df_specific_activity["timestamp"], y=df_specific_activity["altitude"], mode='lines', name='Altitude', line=dict(color='green')), 
+                row=2, col=1, secondary_y=False)
+    # Add Cadence trace to the same subplot as Altitude
+    fig.add_trace(go.Scatter(x=df_specific_activity["timestamp"], y=df_specific_activity["real_cadence"], mode='lines', name='Cadence'), 
+                row=2, col=1, secondary_y=True)
+
+    # Update layout settings
+    fig.update_layout(
+        dragmode='pan',  # zoom, pan, select, lasso
+        hovermode='x unified'  # Enable unified hover mode across all traces
+    )
+    fig = update_screen_height_of_fig(fig)
+
+    # Set y-axis titles
+    fig.update_yaxes(title_text="HR", row=1, col=1, secondary_y=False)
+    fig.update_yaxes(range=[3, 10], title_text="Pace", row=1, col=1,secondary_y=True)
+    fig.update_yaxes(title_text="Altitude", secondary_y=False, row=2, col=1)
+    fig.update_yaxes(range=[150, 200], title_text="Cadence", secondary_y=True, row=2, col=1)
+    fig.update_yaxes(fixedrange=True)
+
+    # Your existing code to configure and display the figure
+    config = {'scrollZoom': True}
+
+    st.plotly_chart(fig, use_container_width=True, config=config)
 
 def plot_specific_activity5(df_specific_activity: pd.DataFrame):
     """
@@ -62,23 +98,18 @@ def plot_specific_activity5(df_specific_activity: pd.DataFrame):
     # Add HR trace
     fig.add_trace(go.Scatter(x=df_specific_activity["timestamp"], y=df_specific_activity["hr"], mode='lines', name='HR'), 
                 row=1, col=1, secondary_y=False)
-
     # Add Pace trace
     fig.add_trace(go.Scatter(x=df_specific_activity["timestamp"], y=df_specific_activity["pace"], mode='lines', name='Pace'), 
                 row=1, col=1, secondary_y=True)
-
-
-
     # Add Altitude trace
     fig.add_trace(go.Scatter(x=df_specific_activity["timestamp"], y=df_specific_activity["altitude"], mode='lines', name='Altitude'), 
                 row=2, col=1, secondary_y=False)
-
     # Add Cadence trace to the same subplot as Altitude
     fig.add_trace(go.Scatter(x=df_specific_activity["timestamp"], y=df_specific_activity["real_cadence"], mode='lines', name='Cadence'), 
                 row=2, col=1, secondary_y=True)
 
     # Set y-axis titles
-    fig.update_yaxes(title_text="HR", row=1, col=1, secondary_y=False)
+    fig.update_yaxes(title_text="HR", row=1, col=1, secondary_y=False,)
     fig.update_yaxes(range=[3, 10], title_text="Pace", row=1, col=1,secondary_y=True)
     fig.update_yaxes(title_text="Altitude", secondary_y=False, row=2, col=1)
     fig.update_yaxes(title_text="Cadence", secondary_y=True, row=2, col=1)
@@ -93,7 +124,7 @@ def plot_specific_activity5(df_specific_activity: pd.DataFrame):
 
     if True:
         screen_height, screen_width = get_screen_height_and_width()
-        st.write(f"screen_height: {screen_height}, screen_width: {screen_width}, type_screen_hy: {type(screen_height)}")
+        st.write(f"screen_height: {screen_height}, screen_width: {screen_width}, type_screen_type: {type(screen_height)}")
 
         if screen_height is not None:
             try:
@@ -105,7 +136,16 @@ def plot_specific_activity5(df_specific_activity: pd.DataFrame):
     st.plotly_chart(fig, use_container_width=True, config=config)
 
 
+def update_screen_height_of_fig(fig: plotly.graph_objs.Figure) -> plotly.graph_objs.Figure:
+    screen_height, screen_width = get_screen_height_and_width()
+    st.write(f"screen_height: {screen_height}, screen_width: {screen_width}, type_screen_hy: {type(screen_height)}")
 
+    if screen_height is not None:
+        try:
+            fig.update_layout(height=screen_height*0.9)
+        except TypeError as e:
+            st.write(f"TypeError. screeen_height = {screen_height}")
+    return fig
 
 
 def get_screen_height_and_width():
