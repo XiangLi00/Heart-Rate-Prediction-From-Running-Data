@@ -96,7 +96,7 @@ def plot_specific_activity5(df_specific_activity: pd.DataFrame):
         st.write(f"screen_height: {screen_height}, screen_width: {screen_width}")
 
         if screen_height is not None:
-            fig.update_layout(height=screen_height*0.8)
+            fig.update_layout(height=screen_height*0.9)
 
 
     st.plotly_chart(fig, use_container_width=True, config=config)
