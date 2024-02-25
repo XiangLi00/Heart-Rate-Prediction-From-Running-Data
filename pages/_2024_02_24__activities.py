@@ -100,7 +100,7 @@ def plot_specific_activity5(df_specific_activity: pd.DataFrame):
     st.plotly_chart(fig, use_container_width=True, config=config)
 
     screen_height=streamlit_js_eval(js_expressions='screen.height', key='get_screen_height_javascript')
-    print(f"screen_height: {screen_height}")
+    print(f"screen_heeight: {screen_height}")
 
 
 
