@@ -9,7 +9,7 @@ import pandas as pd
 def print_column_info_of_all_tables(
     db_name: str,
     print_columns: bool = True,
-    specific_table = None,
+    specific_table: None | str = None,
     root_path_db: str = r"C:\Users\Xiang\HealthData\DBs"
 ):
     """
