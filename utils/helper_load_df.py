@@ -3,7 +3,6 @@ import os
 import sqlite3
 import streamlit as st
 
-import fitdecode
 import pandas as pd
 
 
