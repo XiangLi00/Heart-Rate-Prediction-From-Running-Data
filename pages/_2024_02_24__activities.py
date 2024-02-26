@@ -138,7 +138,7 @@ def plot_specific_activity5(df_specific_activity: pd.DataFrame):
 
 def update_screen_height_of_fig(fig: plotly.graph_objs.Figure) -> plotly.graph_objs.Figure:
     screen_height, screen_width = get_screen_height_and_width()
-    st.write(f"screen_height: {screen_height}, screen_width: {screen_width}, type_screen_hy: {type(screen_height)}")
+    st.write(f"screen_height: {screen_height}, screen_width: {screen_width}, type_screen_height: {type(screen_height)}")
 
     if screen_height is not None:
         try:
