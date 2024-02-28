@@ -5,6 +5,7 @@ import streamlit as st
 
 import pandas as pd
 
+import helper_process_summary_dfs
 
 def print_column_info_of_all_tables(
     db_name: str,
@@ -75,7 +76,7 @@ def get_column_info_of_specific_table(
         dict: A dictionary with column names as keys and data types as values.
     """
     path_db = os.path.join(root_path_db, db_name)
-    print("root path db in get_column_info_of_specific_table:", root_path_db)
+    # print("Loading data from: ", root_path_db)
     try:
         with sqlite3.connect(path_db) as con:
             cursor = con.cursor()
@@ -96,7 +97,7 @@ def get_column_info_of_specific_table(
 # print_column_info_of_all_tables('garmin_monitoring.db', print_columns=True)
 
 
-def remove_empty_nan_or_zero_rows(df: pd.DataFrame) -> pd.DataFrame:
+def remove_empty_nan_or_zero_rows(df: pd.DataFrame, verbose: bool = False) -> pd.DataFrame:
     """Remove rows where all values are nan, zero or empty.
 
         Currently only applieds to summary.db/weeks_summary
@@ -121,12 +122,114 @@ def remove_empty_nan_or_zero_rows(df: pd.DataFrame) -> pd.DataFrame:
 
         # reset index
         df = df_indexed_empty_rows_removed.reset_index()
-
-        if df.shape != df_shape_before:
-            print(f"Removed {df_shape_before[0] - df.shape[0]} empty/nan/zero rows. Shape before: {df_shape_before}, shape after: {df.shape}. Printed in 'helper_load_df.py/load_df()/remove_empty_nan_or_zero_rows()'")
+        if verbose:
+            if df.shape != df_shape_before:
+                print(f"Removed {df_shape_before[0] - df.shape[0]} empty/nan/zero rows. Shape before: {df_shape_before}, shape after: {df.shape}. Printed in 'helper_load_df.py/load_df()/remove_empty_nan_or_zero_rows()'")
 
     return df
 
+def process_df(df: pd.DataFrame, table_name: str) -> pd.DataFrame:
+    """Process a DataFrame after loading it from a database.
+
+    Args:
+        df (pd.DataFrame): The DataFrame to process.
+        table_name (str): The name of the table.
+
+    Returns:
+        pd.DataFrame: The processed DataFrame.
+    """
+
+    if table_name == 'weeks_summary':
+        df = helper_process_summary_dfs.process_df_weeks_summary(df)
+
+    return df
+
+dict_table_name_to_db_name = {
+    'activities': 'garmin_activities.db',
+    'activity_laps': 'garmin_activities.db',
+    'activity_records': 'garmin_activities.db',
+    'steps_activities': 'garmin_activities.db',
+    'days_summary': 'summary.db',
+    'years_summary': 'summary.db',
+    'weeks_summary': 'summary.db',
+    'months_summary': 'summary.db',
+    'intensity_hr': 'garmin_summary.db',
+    'monitoring': 'garmin_monitoring.db',
+    'monitoring_climb': 'garmin_monitoring.db',
+    'monitoring_hr': 'garmin_monitoring.db',
+    'monitoring_rr': 'garmin_monitoring.db',
+    'monitoring_intensity': 'garmin_monitoring.db',
+    'monitoring_climb': 'garmin_monitoring.db',
+    'files': 'garmin.db',
+    'resting_hr': 'garmin.db',
+    'sleep': 'garmin.db',
+    'sleep_events': 'garmin.db',
+    'stress': 'garmin.db',
+    'weight': 'garmin.db',
+}
+
+
+@st.cache_data
+def load_df_v2(
+        table_name: str,
+        root_path_db: str = r"C:\Users\Xiang\HealthData\DBs",
+        sql_selected_columns: str = "*",
+        sql_condition: str = "",
+) -> pd.DataFrame:
+    """
+    Load a DataFrame from a SQLite database table.
+
+    Parse column data types:
+    - DATETIME: Parse as datetime64
+    - DATE: Parse as datetime64
+    - TIME: Parse as timedelta64
+    - INTEGER: Parse as float
+
+    Parameters:
+        table_name (str): The name of the table to load.
+        root_path_db (str, optional): The root path of the database. 
+
+    Returns:
+        pd.DataFrame: The loaded DataFrame.
+
+    """
+    db_name = dict_table_name_to_db_name[table_name]
+
+    # Get the column names and data types for the specified table
+    dict_table_column_info = get_column_info_of_specific_table(db_name=db_name, table_name=table_name, root_path_db=root_path_db)
+
+    # pinf('dict_table_column_info')
+    datetime_column_names = [column_name for (column_name, data_type) in dict_table_column_info.items() if data_type == 'DATETIME']
+    date_column_names = [column_name for (column_name, data_type) in dict_table_column_info.items() if data_type == 'DATE']
+    time_column_names = [column_name for (column_name, data_type) in dict_table_column_info.items() if data_type == 'TIME']
+    integer_column_names = [column_name for (column_name, data_type) in dict_table_column_info.items() if data_type == 'INTEGER']
+
+    path_db = os.path.join(root_path_db, db_name)
+    with sqlite3.connect(path_db) as con:
+
+        # Read the SQL query with the updated variables
+
+        # If we have no condition, then it is empty, else need to add WHERE
+        sql_where_statement = f"WHERE {sql_condition}" if sql_condition else ""
+
+        df = pd.read_sql(
+            f"SELECT {sql_selected_columns} FROM {table_name} {sql_where_statement}",  # WHERE first_day > '2023-11-25'",
+            con,
+            parse_dates=datetime_column_names + date_column_names  # Parse datetime and date as datetime64
+        )
+        # df.name = table_name
+
+    # Convert time columns to timedelta
+    df[time_column_names] = df[time_column_names].map(pd.to_timedelta)
+    # Convert integer columns to float
+    df[integer_column_names] = df[integer_column_names].astype(float)
+
+    df = remove_empty_nan_or_zero_rows(df, verbose=False)
+    df = process_df(df=df, table_name=table_name)
+
+    print(f"Loaded {table_name} from {db_name}. Shape: {df.shape}. ")
+
+    return df
 
 @st.cache_data
 def load_df(
@@ -177,14 +280,15 @@ def load_df(
             con,
             parse_dates=datetime_column_names + date_column_names  # Parse datetime and date as datetime64
         )
-        df.name = table_name
+        # df.name = table_name
 
     # Convert time columns to timedelta
     df[time_column_names] = df[time_column_names].map(pd.to_timedelta)
     # Convert integer columns to float
     df[integer_column_names] = df[integer_column_names].astype(float)
 
-    df = remove_empty_nan_or_zero_rows(df)
+    df = remove_empty_nan_or_zero_rows(df, verbose=False)
+    df = process_df(df=df, table_name=table_name)
 
     print(f"Loaded {table_name} from {db_name}. Shape: {df.shape}. ")
 

@@ -9,6 +9,7 @@ import fitdecode  # for parsing fit into csv
 import numpy as np
 import pandas as pd
 
+import helper
 
 def move_columns_to_end(df, columns):
     for col in columns:
