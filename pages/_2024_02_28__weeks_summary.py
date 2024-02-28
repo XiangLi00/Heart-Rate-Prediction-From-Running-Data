@@ -36,3 +36,5 @@ def page():
 
     st.dataframe(df_weeks_summary)
     st.write(f"Shape: {df_weeks_summary.shape}")
+
+    st.write("hello world!")
