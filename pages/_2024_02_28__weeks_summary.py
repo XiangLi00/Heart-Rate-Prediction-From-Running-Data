@@ -50,4 +50,6 @@ def page():
 
     st.data_editor(df_weeks_summary)
 
+    st.write("in the page() summary file()")
+
 st.write("helileo moon!")
