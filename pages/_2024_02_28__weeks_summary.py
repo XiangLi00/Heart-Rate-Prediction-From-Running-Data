@@ -51,4 +51,4 @@ def page():
     st.data_editor(df_weeks_summary)
 
 
-    st.write("helileo world!")
+    st.write("helileo woreeeeld!")
