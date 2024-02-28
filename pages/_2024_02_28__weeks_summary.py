@@ -52,4 +52,7 @@ def page():
 
     st.write("in the page() summmmmary file()")
 
+def page3():
+    st.write("inside summary.page3()")
+
 st.write("helileeeeo moon!")
