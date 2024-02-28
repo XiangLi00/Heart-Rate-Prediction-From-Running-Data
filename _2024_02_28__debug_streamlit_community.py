@@ -18,6 +18,6 @@ import streamlit as st
 from streamlit_js_eval import streamlit_js_eval
 
 def page():
-    st.write("inside debug file.page()")
+    st.write("inside debug file.page( v2")
 
-st.write("inside debug file.")
+st.write("inside debug file. v2")
