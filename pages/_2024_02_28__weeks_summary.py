@@ -34,7 +34,21 @@ def page():
         sql_condition=""
         )
 
-    st.dataframe(df_weeks_summary)
+    column_config_df_weeks_summary = {
+        "inactive_hr_avg": st.column_config.NumberColumn(
+            format="%.1f",
+            ),
+        "floors": st.column_config.NumberColumn(
+            format="%d",
+            ),
+    }
+
+    st.dataframe(
+        df_weeks_summary, 
+        column_config=column_config_df_weeks_summary)
     st.write(f"Shape: {df_weeks_summary.shape}")
+
+    st.data_editor(df_weeks_summary)
+
 
     st.write("helileo world!")
