@@ -22,8 +22,8 @@ sys.path.append(os.getcwd())
 
 # Choose page to display
 module_name = [
-    '_2024_02_28__weeks_summary'
-    '_2024_02_24__11_28_monitoring_hr_different_plotting_libs', '_2024_02_24__activities'][1]
+    '_2024_02_28__weeks_summary',
+    '_2024_02_24__11_28_monitoring_hr_different_plotting_libs', '_2024_02_24__activities'][0]
 st.header(module_name)
 module = importlib.import_module("pages." + module_name)
 module.page()

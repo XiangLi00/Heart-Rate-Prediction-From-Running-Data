@@ -5,7 +5,7 @@ import streamlit as st
 
 import pandas as pd
 
-import helper_process_summary_dfs
+import utils.helper_process_summary_dfs
 
 def print_column_info_of_all_tables(
     db_name: str,
@@ -140,7 +140,7 @@ def process_df(df: pd.DataFrame, table_name: str) -> pd.DataFrame:
     """
 
     if table_name == 'weeks_summary':
-        df = helper_process_summary_dfs.process_df_weeks_summary(df)
+        df = utils.helper_process_summary_dfs.process_df_weeks_summary(df)
 
     return df
 

@@ -30,8 +30,9 @@ def page():
     df_weeks_summary = load_df_v2(
         table_name='weeks_summary',
         root_path_db=os.path.join(os.getcwd(), 'data'),
-        ql_selected_columns="*",
-        sql_condition="",)
+        sql_selected_columns="*",
+        sql_condition=""
+        )
 
     st.dataframe(df_weeks_summary)
     st.write(f"Shape: {df_weeks_summary.shape}")
