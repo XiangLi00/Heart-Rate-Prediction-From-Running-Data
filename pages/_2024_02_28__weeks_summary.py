@@ -50,4 +50,4 @@ def page():
 
     st.data_editor(df_weeks_summary)
 
-st.write("helileo woreeeelliiild!")
+st.write("helileo moon!")
