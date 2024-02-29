@@ -22,7 +22,7 @@ from utils.helper_load_df import load_df_v2, print_column_info_of_all_tables, ge
 
 # Append project path to system path
 # print(f"Project root folder: {os.getcwd()}")
-sys.path.append(os.getcwd())  
+# sys.path.append(os.getcwd())  
 
 
 def page():
