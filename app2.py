@@ -34,4 +34,4 @@ from pages._2024_02_28__weeks_summary import page3
 page3()
 
 
-st.write("app2.py: v1")
+st.write("app2.py: v2")

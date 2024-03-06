@@ -53,6 +53,6 @@ def page():
     st.write("in the page() summmmmary file()")
 
 def page3():
-    st.write("weeks_summary.page3(): v1")
+    st.write("weeks_summary.page3(): v2")
 
-st.write("weeks_summary: v1")
+st.write("weeks_summary: v2")
