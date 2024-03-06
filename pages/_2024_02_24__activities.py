@@ -70,7 +70,7 @@ def plot_specific_activity6(df_specific_activity: pd.DataFrame):
 
     st.plotly_chart(fig, use_container_width=True, config=config)
 
-    st.write("activities.plot_specific_activity6(): v1")
+    st.write("activities.plot_specific_activity6(): v2")
 
 def plot_specific_activity5(df_specific_activity: pd.DataFrame):
     """
