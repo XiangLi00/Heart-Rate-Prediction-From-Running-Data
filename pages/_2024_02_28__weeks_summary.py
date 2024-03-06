@@ -24,6 +24,9 @@ from utils.helper_load_df import load_df_v2, print_column_info_of_all_tables, ge
 # print(f"Project root folder: {os.getcwd()}")
 # sys.path.append(os.getcwd())  
 
+st.set_page_config(page_title="Weeks Summary", page_icon="📈")
+
+
 
 def page():
 
