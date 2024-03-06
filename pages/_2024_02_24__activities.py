@@ -25,27 +25,26 @@ from utils.helper_load_df import load_df, print_column_info_of_all_tables, get_c
 sys.path.append(os.getcwd())  
 
 
-def page():
-    """
-        table: monitoring_hr
+"""
+    table: monitoring_hr
 
-        First version, trying out plotly, altair, vega-lite, and bokeh.
-        
-    """
+    First version, trying out plotly, altair, vega-lite, and bokeh.
+    
+"""
 
-    activity_id_selected = st.text_input("Enter activity_id", "14057922527")
+activity_id_selected = st.text_input("Enter activity_id", "14057922527")
 
-    df_specific_activity = load_df('garmin_activities.db', 'activity_records', root_path_db=os.path.join(os.getcwd(), 'data'),
-                            sql_selected_columns="*",
-                            sql_condition=f"activity_id={activity_id_selected}",)
+df_specific_activity = load_df('garmin_activities.db', 'activity_records', root_path_db=os.path.join(os.getcwd(), 'data'),
+                        sql_selected_columns="*",
+                        sql_condition=f"activity_id={activity_id_selected}",)
 
-    st.dataframe(df_specific_activity)
-    st.write(f"Shape: {df_specific_activity.shape}")
+st.dataframe(df_specific_activity)
+st.write(f"Shape: {df_specific_activity.shape}")
 
-    df_specific_activity["pace"] = 60 / (df_specific_activity["speed"])
-    df_specific_activity["real_cadence"] = 2*(df_specific_activity["cadence"])
+df_specific_activity["pace"] = 60 / (df_specific_activity["speed"])
+df_specific_activity["real_cadence"] = 2*(df_specific_activity["cadence"])
 
-    plot_specific_activity6(df_specific_activity)
+plot_specific_activity6(df_specific_activity)
 
 def plot_specific_activity6(df_specific_activity: pd.DataFrame):
     fig = make_subplots(rows=2, cols=1, shared_xaxes=True, shared_yaxes=False, 
