@@ -20,20 +20,6 @@ from streamlit_js_eval import streamlit_js_eval
 
 from utils.helper_load_df import load_df, print_column_info_of_all_tables, get_column_info_of_specific_table, generate_report, test_func_v1
 
-# Append project path to system path
-# print(f"Project root folder: {os.getcwd()}")
-sys.path.append(os.getcwd())  
-
-
-"""
-    table: monitoring_hr
-
-    First version, trying out plotly, altair, vega-lite, and bokeh.
-    
-"""
-
-
-
 def plot_specific_activity6(df_specific_activity: pd.DataFrame):
     fig = make_subplots(rows=2, cols=1, shared_xaxes=True, shared_yaxes=False, 
                     specs=[[{"secondary_y": True}], [{"secondary_y": True}]])
@@ -70,8 +56,6 @@ def plot_specific_activity6(df_specific_activity: pd.DataFrame):
 
     st.plotly_chart(fig, use_container_width=True, config=config)
 
-    st.write("activities.plot_specific_activity6(): v2")
-    test_func_v1()
 
 def plot_specific_activity5(df_specific_activity: pd.DataFrame):
     """
@@ -125,6 +109,9 @@ def plot_specific_activity5(df_specific_activity: pd.DataFrame):
 
     st.plotly_chart(fig, use_container_width=True, config=config)
 
+    
+    st.write("activities.plot_specific_activity5(): v2")
+    test_func_v1()
 
 def update_screen_height_of_fig(fig: plotly.graph_objs.Figure) -> plotly.graph_objs.Figure:
     screen_height, screen_width = get_screen_height_and_width()
@@ -253,7 +240,10 @@ def plot_specific_activity(df_specific_activity: pd.DataFrame):
     
     st.plotly_chart(fig, use_container_width=True, config=config)
 
-  
+
+# Append project path to system path
+# print(f"Project root folder: {os.getcwd()}")
+sys.path.append(os.getcwd())  
 
 activity_id_selected = st.text_input("Enter activity_id", "14057922527")
 
