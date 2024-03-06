@@ -32,19 +32,7 @@ sys.path.append(os.getcwd())
     
 """
 
-activity_id_selected = st.text_input("Enter activity_id", "14057922527")
 
-df_specific_activity = load_df('garmin_activities.db', 'activity_records', root_path_db=os.path.join(os.getcwd(), 'data'),
-                        sql_selected_columns="*",
-                        sql_condition=f"activity_id={activity_id_selected}",)
-
-st.dataframe(df_specific_activity)
-st.write(f"Shape: {df_specific_activity.shape}")
-
-df_specific_activity["pace"] = 60 / (df_specific_activity["speed"])
-df_specific_activity["real_cadence"] = 2*(df_specific_activity["cadence"])
-
-plot_specific_activity6(df_specific_activity)
 
 def plot_specific_activity6(df_specific_activity: pd.DataFrame):
     fig = make_subplots(rows=2, cols=1, shared_xaxes=True, shared_yaxes=False, 
@@ -263,3 +251,17 @@ def plot_specific_activity(df_specific_activity: pd.DataFrame):
     st.plotly_chart(fig, use_container_width=True, config=config)
 
   
+
+activity_id_selected = st.text_input("Enter activity_id", "14057922527")
+
+df_specific_activity = load_df('garmin_activities.db', 'activity_records', root_path_db=os.path.join(os.getcwd(), 'data'),
+                        sql_selected_columns="*",
+                        sql_condition=f"activity_id={activity_id_selected}",)
+
+st.dataframe(df_specific_activity)
+st.write(f"Shape: {df_specific_activity.shape}")
+
+df_specific_activity["pace"] = 60 / (df_specific_activity["speed"])
+df_specific_activity["real_cadence"] = 2*(df_specific_activity["cadence"])
+
+plot_specific_activity6(df_specific_activity)
