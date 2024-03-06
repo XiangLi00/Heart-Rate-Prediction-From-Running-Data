@@ -21,8 +21,11 @@ from streamlit_js_eval import streamlit_js_eval
 from utils.helper_load_df import load_df, print_column_info_of_all_tables, get_column_info_of_specific_table, generate_report, test_func_v1
 
 def plot_specific_activity6(df_specific_activity: pd.DataFrame):
-    fig = make_subplots(rows=2, cols=1, shared_xaxes=True, shared_yaxes=False, 
-                    specs=[[{"secondary_y": True}], [{"secondary_y": True}]])
+    fig = make_subplots(rows=2, cols=1, 
+                        shared_xaxes=True, shared_yaxes=False, 
+                        specs=[[{"secondary_y": True}], [{"secondary_y": True}],],
+                        vertical_spacing= 0.03
+                        )
 
     # Add HR trace
     fig.add_trace(go.Scatter(x=df_specific_activity["timestamp"], y=df_specific_activity["hr"], mode='lines', name='HR'), 
