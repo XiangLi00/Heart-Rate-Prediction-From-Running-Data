@@ -7,6 +7,9 @@ import pandas as pd
 
 import utils.helper_process_summary_dfs
 
+def test_func_v1():
+    st.write("helper_load_df.test_func_v1() v1")
+
 def print_column_info_of_all_tables(
     db_name: str,
     print_columns: bool = True,
