@@ -9,8 +9,6 @@ import fitdecode  # for parsing fit into csv
 import numpy as np
 import pandas as pd
 
-import helper
-
 def move_columns_to_end(df, columns):
     for col in columns:
         if col in df.columns: 
@@ -30,10 +28,13 @@ def process_df_from_fit(df_activity):
     df_activity['pace'] = df_activity['pace'].replace([np.inf, -np.inf], np.nan)
 
     # Drop columns
-    df_activity = df_activity.drop(columns=['stance_time_percent', 'stance_time_balance', 'fractional_cadence'], errors = 'ignore')
+    df_activity = df_activity.drop(columns=['stance_time_percent', 'stance_time_balance', 'fractional_cadence', 'cadence'], errors = 'ignore')
 
     # Reorder columns
     df_activity = move_columns_to_end(df_activity, ['position_lat', 'position_long'])
+
+    # Impute
+    df_activity['accumulated_power'] = df_activity['accumulated_power'].fillna(0)
 
     return df_activity
 

@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 import importlib
+import math
 import os
 import sqlite3
 import sys
@@ -24,17 +25,17 @@ def plot_specific_activity6(df_specific_activity: pd.DataFrame):
     fig = make_subplots(rows=2, cols=1, 
                         shared_xaxes=True, shared_yaxes=False, 
                         specs=[[{"secondary_y": True}], [{"secondary_y": True}],],
-                        vertical_spacing= 0.03
+                        vertical_spacing=0.03
                         )
 
     # Add HR trace
-    fig.add_trace(go.Scatter(x=df_specific_activity["timestamp"], y=df_specific_activity["hr"], mode='lines', name='HR'), 
+    fig.add_trace(go.Scatter(x=df_specific_activity["timestamp"], y=df_specific_activity["hr"], mode='lines', name='HR', line=dict(color='crimson')), 
                 row=1, col=1, secondary_y=False)
     # Add Pace trace
-    fig.add_trace(go.Scatter(x=df_specific_activity["timestamp"], y=df_specific_activity["pace"], mode='lines', name='Pace'), 
+    fig.add_trace(go.Scatter(x=df_specific_activity["timestamp"], y=df_specific_activity["pace"], mode='lines', name='Pace', line=dict(color='deepskyblue')), 
                 row=1, col=1, secondary_y=True)
     # Add Altitude trace
-    fig.add_trace(go.Scatter(x=df_specific_activity["timestamp"], y=df_specific_activity["altitude"], mode='lines', name='Altitude', line=dict(color='green')), 
+    #fig.add_trace(go.Scatter(x=df_specific_activity["timestamp"], y=df_specific_activity["altitude"], mode='lines', name='Altitude', line=dict(color='green')), 
                 row=2, col=1, secondary_y=False)
     # Add Cadence trace to the same subplot as Altitude
     fig.add_trace(go.Scatter(x=df_specific_activity["timestamp"], y=df_specific_activity["real_cadence"], mode='lines', name='Cadence'), 
@@ -49,7 +50,7 @@ def plot_specific_activity6(df_specific_activity: pd.DataFrame):
 
     # Set y-axis titles
     fig.update_yaxes(title_text="HR", row=1, col=1, secondary_y=False)
-    fig.update_yaxes(range=[3, 10], title_text="Pace", row=1, col=1,secondary_y=True)
+    fig.update_yaxes(range=[math.log10(15), math.log10(3)], title_text="Pace",  type="log", row=1, col=1,secondary_y=True) # , type="log",autorange="reversed",  ,autorange="reversed"
     fig.update_yaxes(title_text="Altitude", secondary_y=False, row=2, col=1)
     fig.update_yaxes(range=[150, 200], title_text="Cadence", secondary_y=True, row=2, col=1)
     fig.update_yaxes(fixedrange=True)
