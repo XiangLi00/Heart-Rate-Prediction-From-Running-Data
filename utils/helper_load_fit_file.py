@@ -9,21 +9,19 @@ import fitdecode  # for parsing fit into csv
 import numpy as np
 import pandas as pd
 
-def move_columns_to_end(df, columns):
-    for col in columns:
-        if col in df.columns: 
-            df[col] = df.pop(col)
-    return df
+import helper_pandas
 
-
-def process_df_from_fit(df_activity):
+def _process_df_from_fit(df_activity):
     # rename columns enhanced speed and altitude by removing the prefix
     df_activity = df_activity.rename(columns={'enhanced_speed': 'speed', 'enhanced_altitude': 'altitude'})
 
-    # Add new columns
+    # Unit conversion
+    df_activity['speed'] = df_activity['speed']*3.6  # m/s to km/h
+
+    ## Add new columns
     df_activity['steps_per_min'] = (df_activity['cadence'] + df_activity['fractional_cadence']) * 2  # steps per minute
 
-    df_activity.insert(5, 'pace', 60 / (df_activity['speed'] * 3.6)) # speed in m/s
+    df_activity.insert(5, 'pace', 60 / (df_activity['speed'] )) 
     # convert inf to nan to avoid "FutureWarning: use_inf_as_na option is deprecated and will be removed in a future version. Convert inf values to NaN before operating instead.
     df_activity['pace'] = df_activity['pace'].replace([np.inf, -np.inf], np.nan)
 
@@ -31,7 +29,7 @@ def process_df_from_fit(df_activity):
     df_activity = df_activity.drop(columns=['stance_time_percent', 'stance_time_balance', 'fractional_cadence', 'cadence'], errors = 'ignore')
 
     # Reorder columns
-    df_activity = move_columns_to_end(df_activity, ['position_lat', 'position_long'])
+    df_activity = helper_pandas.move_columns_to_end(df_activity, ['position_lat', 'position_long'])
 
     # Impute
     df_activity['accumulated_power'] = df_activity['accumulated_power'].fillna(0)
@@ -39,7 +37,7 @@ def process_df_from_fit(df_activity):
     return df_activity
 
 
-def load_raw_df_from_fit(path_fit_file: str, frame_name: str = 'record', lat_long_update: bool = True, debug: bool = False) -> pd.DataFrame:
+def _load_raw_df_from_fit(path_fit_file: str, frame_name: str = 'record', lat_long_update: bool = True, debug: bool = False) -> pd.DataFrame:
     """
     Decodes a .FIT file and returns the data as a pandas DataFrame.
 
@@ -103,9 +101,9 @@ def load_raw_df_from_fit(path_fit_file: str, frame_name: str = 'record', lat_lon
     return df_activity
 
 
-def load_df_from_fit(fit_file_path: str) -> pd.DataFrame:
-    df_activity = load_raw_df_from_fit(fit_file_path)
-    df_activity = process_df_from_fit(df_activity)
+def load_fit_file(fit_file_path: str) -> pd.DataFrame:
+    df_activity = _load_raw_df_from_fit(fit_file_path)
+    df_activity = _process_df_from_fit(df_activity)
     return df_activity
 
 if False:
@@ -113,4 +111,4 @@ if False:
     project_path = r'D:\OneDrive\7Temporary\Coding\2024_02_20_Garmin'
 
     path_fit_file = os.path.join(project_path, 'data', 'FitFiles', 'Activities', f'{activity_id}_ACTIVITY.fit')
-    df_activity = load_df_from_fit(path_fit_file)
+    df_activity = load_fit_file(path_fit_file)
