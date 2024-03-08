@@ -35,8 +35,7 @@ def plot_specific_activity6(df_specific_activity: pd.DataFrame):
     fig.add_trace(go.Scatter(x=df_specific_activity["timestamp"], y=df_specific_activity["pace"], mode='lines', name='Pace', line=dict(color='deepskyblue')), 
                 row=1, col=1, secondary_y=True)
     # Add Altitude trace
-    #fig.add_trace(go.Scatter(x=df_specific_activity["timestamp"], y=df_specific_activity["altitude"], mode='lines', name='Altitude', line=dict(color='green')), 
-                row=2, col=1, secondary_y=False)
+    #fig.add_trace(go.Scatter(x=df_specific_activity["timestamp"], y=df_specific_activity["altitude"], mode='lines', name='Altitude', line=dict(color='green')),                 row=2, col=1, secondary_y=False)
     # Add Cadence trace to the same subplot as Altitude
     fig.add_trace(go.Scatter(x=df_specific_activity["timestamp"], y=df_specific_activity["real_cadence"], mode='lines', name='Cadence'), 
                 row=2, col=1, secondary_y=True)

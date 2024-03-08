@@ -20,7 +20,10 @@ def _process_df_from_fit(df_activity):
 
     ## Add new columns
     df_activity['steps_per_min'] = (df_activity['cadence'] + df_activity['fractional_cadence']) * 2  # steps per minute
+    df_activity['power_from_100'] = np.maximum(0, df_activity['power'] - 100)  # Motivation 100W running and 0W are similarly exhausting
 
+
+    # Add column pace
     df_activity.insert(5, 'pace', 60 / (df_activity['speed'] )) 
     # convert inf to nan to avoid "FutureWarning: use_inf_as_na option is deprecated and will be removed in a future version. Convert inf values to NaN before operating instead.
     df_activity['pace'] = df_activity['pace'].replace([np.inf, -np.inf], np.nan)
@@ -77,7 +80,6 @@ def _load_raw_df_from_fit(path_fit_file: str, frame_name: str = 'record', lat_lo
                 # If the current frame is a record, we'll reset the row_dict variable
                 # and add the field values for all fields in the good_list variable
                 if frame.name == frame_name:
-
                     row_dict = {}
                     for field in frame.fields: 
                         if field.name.find('unknown') < 0:
