@@ -12,30 +12,30 @@ import pandas as pd
 import helper_pandas
 
 def _process_df_from_fit(df_activity):
-    # rename columns enhanced speed and altitude by removing the prefix
+    ## rename columns 
     df_activity = df_activity.rename(columns={'enhanced_speed': 'speed', 'enhanced_altitude': 'altitude'})
 
-    # Unit conversion
+    ## Unit conversion
     df_activity['speed'] = df_activity['speed']*3.6  # m/s to km/h
 
     ## Add new columns
     df_activity['steps_per_min'] = (df_activity['cadence'] + df_activity['fractional_cadence']) * 2  # steps per minute
-    df_activity['power_from_100'] = np.maximum(0, df_activity['power'] - 100)  # Motivation 100W running and 0W are similarly exhausting
-
+    df_activity['power100'] = np.maximum(0, df_activity['power'] - 100)  # Motivation 100W running and 0W are similarly exhausting
 
     # Add column pace
-    df_activity.insert(5, 'pace', 60 / (df_activity['speed'] )) 
-    # convert inf to nan to avoid "FutureWarning: use_inf_as_na option is deprecated and will be removed in a future version. Convert inf values to NaN before operating instead.
-    df_activity['pace'] = df_activity['pace'].replace([np.inf, -np.inf], np.nan)
+    if False:
+        df_activity.insert(5, 'pace', 60 / (df_activity['speed'] )) 
+        # convert inf to nan to avoid "FutureWarning: use_inf_as_na option is deprecated and will be removed in a future version. Convert inf values to NaN before operating instead.
+        df_activity['pace'] = df_activity['pace'].replace([np.inf, -np.inf], np.nan)
 
-    # Drop columns
+    ## Drop columns
     df_activity = df_activity.drop(columns=['stance_time_percent', 'stance_time_balance', 'fractional_cadence', 'cadence'], errors = 'ignore')
 
-    # Reorder columns
+    ## Reorder columns
     df_activity = helper_pandas.move_columns_to_end(df_activity, ['position_lat', 'position_long'])
 
-    # Impute
-    df_activity['accumulated_power'] = df_activity['accumulated_power'].fillna(0)
+    ## Impute
+    # df_activity['accumulated_power'] = df_activity['accumulated_power'].fillna(0)
 
     return df_activity
 
