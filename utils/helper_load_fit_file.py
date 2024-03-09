@@ -13,7 +13,11 @@ import helper_pandas
 
 def _process_df_from_fit(df_activity):
     ## rename columns 
-    df_activity = df_activity.rename(columns={'enhanced_speed': 'speed', 'enhanced_altitude': 'altitude'})
+    df_activity = df_activity.rename(columns={'enhanced_speed': 'speed', 
+                                              'enhanced_altitude': 'altitude', 
+                                              'heart_rate': 'hr', 
+                                              'accumulated_power': 'cum_power',
+                                              'distance': 'cum_distance'})
 
     ## Unit conversion
     df_activity['speed'] = df_activity['speed']*3.6  # m/s to km/h
@@ -34,8 +38,68 @@ def _process_df_from_fit(df_activity):
     ## Reorder columns
     df_activity = helper_pandas.move_columns_to_end(df_activity, ['position_lat', 'position_long'])
 
-    ## Impute
-    # df_activity['accumulated_power'] = df_activity['accumulated_power'].fillna(0)
+    return df_activity
+
+
+def _impute_df_from_fit(df_activity):
+
+    # Add column. imputed=True ^= entirue row was imputed
+    df_activity["imputed"] = False
+
+    df_activity = df_activity.set_index('timestamp').resample('s').asfreq().reset_index()
+
+    # Set boolean columns to boolean type (Reason: fillna gives wornang otherwise)
+    df_activity['imputed'] = df_activity['imputed'].astype(bool)
+
+
+    # Apply imputation method 1: Impute with fixed values
+    dict_column_and_fixed_imputed_value = {
+        "imputed": True,
+        "power": 0,
+        "speed": 0,
+        "step_length": 0,
+        "activity_type": "pause",
+        "steps_per_min": 0,
+        "power100": 0,
+    }
+    # Assert that the this columns exist in df_activity
+    assert set(dict_column_and_fixed_imputed_value.keys()).issubset(set(df_activity.columns)), f"The columns {str(set(dict_column_and_fixed_imputed_value.keys())- set(df_activity.columns))} to be imputed with fixed values are not present in the dataframe. Existing columns are {list(df_activity.columns)}."
+    # Impute
+    df_activity = df_activity.fillna(dict_column_and_fixed_imputed_value)
+
+    # Apply imputation method 2: linear interpolation
+    columns_to_impute_linearly = [
+        "cum_distance", "altitude", "hr", "cum_power", "position_lat", "position_long"
+        ]
+    # Assert that the this columns exist in df_activity
+    assert set(columns_to_impute_linearly).issubset(set(df_activity.columns)), f"The columns {set(columns_to_impute_linearly)- set(df_activity.columns)} do not exist in the dataframe. Existing columns are {list(df_activity.columns)}."
+    # Impute linearly
+    for column in columns_to_impute_linearly:
+        df_activity[column] = df_activity[column].interpolate(method='linear')
+
+    # Apply imputation method 3: backward fill
+    columns_to_impute_via_backwards_fill = [
+        "cum_power", 
+        ]
+    # Assert that the this columns exist in df_activity
+    assert set(columns_to_impute_via_backwards_fill).issubset(set(df_activity.columns)), f"The columns {set(columns_to_impute_via_backwards_fill)- set(df_activity.columns)} do not exist in the dataframe. Existing columns are {list(df_activity.columns)}."
+    # Impute linearly
+    for column in columns_to_impute_via_backwards_fill:
+        df_activity[column] = df_activity[column].bfill()
+
+    if False:
+        # Special case imputation: column "cum_power" – first row - impute NaN wit 0
+        if pd.isna(df_activity.loc[df_activity.index[0], 'cum_power']):
+            df_activity.loc[df_activity.index[0], 'cum_power'] = 0
+
+    
+    # Assert that most columns are fully imputed
+    columns_not_requiring_imputation = {"vertical_oscillation", "stance_time", "vertical_ratio"}
+    columns_requiring_imputation = list(set(df_activity.columns) - columns_not_requiring_imputation)
+    ser_nans_per_column = df_activity[columns_requiring_imputation].isna().sum()
+    ser_nans_per_column_positive = ser_nans_per_column[ser_nans_per_column > 0]
+    assert len(ser_nans_per_column_positive) == 0, f"Imputation failed. The following columns still contain NaNs: {ser_nans_per_column_positive}"
+
 
     return df_activity
 
@@ -106,6 +170,8 @@ def _load_raw_df_from_fit(path_fit_file: str, frame_name: str = 'record', lat_lo
 def load_fit_file(fit_file_path: str) -> pd.DataFrame:
     df_activity = _load_raw_df_from_fit(fit_file_path)
     df_activity = _process_df_from_fit(df_activity)
+    df_activity = _impute_df_from_fit(df_activity)
+    
     return df_activity
 
 if False:
