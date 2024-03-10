@@ -20,7 +20,7 @@ sys.path.append(os.getcwd())
 sys.path.append(os.path.join(os.getcwd(), 'utils'))  
 sys.path.append(os.path.join(os.getcwd(), 'streamlit_pages'))  
 
-
+st.write(f'app2: {os.getcwd()}')
 
 action = 3
 
