@@ -21,18 +21,14 @@ sys.path.append(os.getcwd())
 
 action = 3
 
+#Prints a specific function in the.py page 
 if action == 1:
-    """
-    – Prints a specific function in the.py page 
-    """
     from streamlit_pages._2024_02_28__weeks_summary import page3
     #from _2024_02_28__debug_streamlit_community import page3
     page3()
 
+# Prints all of the .py page 
 if action == 2:
-    """
-    – Prints all of the .py page 
-    """
     # Choose page to display
     module_name = [
         '_2024_02_28__weeks_summary',
@@ -46,11 +42,9 @@ if action == 2:
     # Shows the content of this streamlit page (just by importing it)
     module = importlib.import_module("streamlit_pages." + module_name) # fancy way of writing "import streamlit_pages._2024_02_28__weeks_summary"
 
+# Dropdown menu to select the page to display
 if action == 3:
-    """
-        Dropdown menu to select the page to display
-    """
-    st.write(os.getcwd())
+    #st.write(os.getcwd())
 
     folder_path = "streamlit_pages"
     # Retrieve all .py files in folder
