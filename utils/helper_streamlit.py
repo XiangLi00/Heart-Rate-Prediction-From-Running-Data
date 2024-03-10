@@ -7,6 +7,8 @@ from pandas.api.types import (
     is_object_dtype,
 )
 
+def _is_datetime_utc_column(df, col):
+    return pd.api.types.is_datetime64tz_dtype(df[col])
 
 
 def add_df_activities_filtering_ui(df: pd.DataFrame) -> pd.DataFrame:
@@ -33,7 +35,8 @@ def add_df_activities_filtering_ui(df: pd.DataFrame) -> pd.DataFrame:
 
     # Try to convert datetimes into a standard format (datetime, no timezone)
     for col in df.columns:
-        if is_object_dtype(df[col]):
+        if _is_datetime_utc_column(df, col):
+        # if is_object_dtype(df[col]):
             try:
                 df[col] = pd.to_datetime(df[col])
             except Exception as e:

@@ -57,5 +57,5 @@ df = helper_load_fit_file.load_fit_file(path_fit_file)
 st.dataframe(df)
 
 
-
+df.info(verbose=True)
 
