@@ -29,8 +29,7 @@ if action == 1:
         ][-1]
     st.header(module_name)
     module = importlib.import_module("streamlit_pages." + module_name)
-    from module import page
-    page()
+    module.page()
 if action == 2:
     from streamlit_pages._2024_02_28__weeks_summary import page3
     #from _2024_02_28__debug_streamlit_community import page3
