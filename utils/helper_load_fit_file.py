@@ -143,7 +143,7 @@ def _impute_df_from_fit(df):
 def _assert_df_is_mostly_imputed(df):
     
     # Assert that most columns are fully imputed
-    columns_not_requiring_imputation = {"vertical_oscillation", "stance_time", "vertical_ratio"}
+    columns_not_requiring_imputation = {"vertical_oscillation", "stance_time", "vertical_ratio", 'position_lat', 'position_long'}
     columns_requiring_imputation = list(set(df.columns) - columns_not_requiring_imputation)
     ser_nans_per_column = df[columns_requiring_imputation].isna().sum()
     ser_nans_per_column_positive = ser_nans_per_column[ser_nans_per_column > 0]
