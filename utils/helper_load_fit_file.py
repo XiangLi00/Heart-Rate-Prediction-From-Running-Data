@@ -31,6 +31,21 @@ def _add_columns(df):
     df['steps_per_min'] = (df['cadence'] + df['fractional_cadence']) * 2  # steps per minute
     df['power100'] = np.maximum(0, df['power'] - 100)  # Motivation 100W running and 0W are similarly exhausting
 
+    # Remark: These should not have any nans
+    df['distance'] = df['cum_distance'].diff().fillna(0)
+    df['elevation_change'] = df['elevation'].diff().fillna(0)
+    df['ascent'] = np.maximum(0, df['elevation_change'])
+    df['descent'] = np.abs(np.maximum(0, -df['elevation_change']))  # np.abs to have 0.0 instead of -0.0
+
+    # Compute grade and uphill_grade
+    # Remark: They should not have any nans
+    df["grade"] = np.where(df["distance"] == 0, 0, df["elevation_change"] / df["distance"] * 100)  # Set it to 0 if distance is 0
+    df["uphill_grade"] = np.where(df["distance"] == 0, 0, df["ascent"] / df["distance"] * 100)
+    # For grade/uphill_grade: add exponential weighted moving average column
+    df[f"grade_ew_120s"] = df["grade"].ewm(span=120).mean()  # Intuition: If I spent most of the time(!) at 10%, then this is ~10%
+    df[f"uphill_grade_ew_120s"] = df["uphill_grade"].ewm(span=120).mean()  # Intuition: If I spent most of the time(!) at 10%, then this is ~10%
+
+
     # Add column pace
     if False:
         df.insert(5, 'pace', 60 / (df['speed'] )) 
@@ -69,10 +84,12 @@ def _impute_df_from_fit(df):
         "imputed": True,
         "power": 0,
         "speed": 0,
+        "cadence": 0,
+        "fractional_cadence": 0,
         "step_length": 0,
         "activity_type": "pause",
-        "steps_per_min": 0,
-        "power100": 0,
+        #"steps_per_min": 0,
+        #"power100": 0,
     }
     # Assert that the this columns exist in df
     assert set(dict_column_and_fixed_imputed_value.keys()).issubset(set(df.columns)), f"The columns {str(set(dict_column_and_fixed_imputed_value.keys())- set(df.columns))} to be imputed with fixed values are not present in the dataframe. Existing columns are {list(df.columns)}."
@@ -103,7 +120,9 @@ def _impute_df_from_fit(df):
         # Special case imputation: column "cum_power" – first row - impute NaN wit 0
         if pd.isna(df.loc[df.index[0], 'cum_power']):
             df.loc[df.index[0], 'cum_power'] = 0
+    return df
 
+def _assert_df_is_mostly_imputed(df):
     
     # Assert that most columns are fully imputed
     columns_not_requiring_imputation = {"vertical_oscillation", "stance_time", "vertical_ratio"}
@@ -112,8 +131,6 @@ def _impute_df_from_fit(df):
     ser_nans_per_column_positive = ser_nans_per_column[ser_nans_per_column > 0]
     assert len(ser_nans_per_column_positive) == 0, f"Imputation failed. The following columns still contain NaNs: {ser_nans_per_column_positive}"
 
-
-    return df
 
 
 def _load_raw_df_from_fit(path_fit_file: str, frame_name: str = 'record', lat_long_update: bool = True, debug: bool = False) -> pd.DataFrame:
@@ -191,9 +208,10 @@ def load_fit_file(fit_file_path: str) -> pd.DataFrame:
     """
     df = _load_raw_df_from_fit(fit_file_path)
     df = _rename_columns_and_convert_units(df)
+    df = _impute_df_from_fit(df)
     df = _add_columns(df)
     df = _drop_and_reorder_columns(df)
-    df = _impute_df_from_fit(df)
+    _assert_df_is_mostly_imputed(df)
     
     return df
 
