@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
+from utils import helper_compute_features
 import helper_pandas
 
 def _rename_columns_and_convert_units(df):
@@ -42,10 +43,26 @@ def _add_columns(df):
     # Remark: They should not have any nans
     df["grade"] = np.where(df["distance"] == 0, 0, df["elevation_change"] / df["distance"] * 100)  # Set it to 0 if distance is 0
     df["uphill_grade"] = np.where(df["distance"] == 0, 0, df["ascent"] / df["distance"] * 100)
-    # For grade/uphill_grade: add exponential weighted moving average column
-    df[f"grade_ew_120s"] = df["grade"].ewm(span=120).mean()  # Intuition: If I spent most of the time(!) at 10%, then this is ~10%
-    df[f"uphill_grade_ew_120s"] = df["uphill_grade"].ewm(span=120).mean()  # Intuition: If I spent most of the time(!) at 10%, then this is ~10%
 
+    # Add exponential weighted moving average columns
+    variable_to_smoothen_exponentially = ["speed", "power100", "grade", "uphill_grade"]
+    list_ew_spans_in_s = [10, 120]
+    for variable in variable_to_smoothen_exponentially:
+        for ew_span in list_ew_spans_in_s:
+            df[f"{variable}_ew_{ew_span}s"] = df[variable].ewm(span=ew_span).mean()
+    # Add gaspeed and gaspeed4 columns (exponentially weighted)
+    for ew_span in list_ew_spans_in_s:
+        col_name_grade= f"grade_ew_{ew_span}s"
+        col_name_speed = f"speed_ew_{ew_span}s"
+        col_name_gaspeed = f"gaspeed_ew_{ew_span}s"
+        col_name_gaspeed4 = f"gaspeed4_ew_{ew_span}s"
+
+        df[col_name_gaspeed] = df[col_name_speed] * helper_compute_features.get_spline_for_gap_computation()(df[col_name_grade])  # calling get_spline_for_gap_computation() each time might be inefficient
+        df[col_name_gaspeed4] = np.maximum(0, df[col_name_gaspeed] - 4)  # Motivation 4km/h running/walking and standing still are similarly exhasting
+    if False:
+        # For grade/uphill_grade: add exponential weighted moving average column
+        df[f"grade_ew_120s"] = df["grade"].ewm(span=120).mean()  # Intuition: If I spent most of the time(!) at 10%, then this is ~10%
+        df[f"uphill_grade_ew_120s"] = df["uphill_grade"].ewm(span=120).mean()  # Intuition: If I spent most of the time(!) at 10%, then this is ~10%
 
     # Add column pace
     if False:

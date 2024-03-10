@@ -26,7 +26,7 @@ st.header("List of activities")
 df_activities = helper_load_specific_df.load_df_activities(root_path_db=os.path.join(project_path, 'data'))
 # Add filtering UI
 with st.expander("Search all activities"):
-    df_activities_filtered = helper_streamlit.add_df_filtering_ui(df_activities)
+    df_activities_filtered = helper_streamlit.add_df_activities_filtering_ui(df_activities)
     
     st.write(f'Showing {len(df_activities_filtered)} out of {len(df_activities)} activities')
     st.dataframe(df_activities_filtered)
@@ -48,4 +48,6 @@ st.dataframe(df_activities.query('activity_id == @activity_id'))
 path_fit_file = os.path.join(project_path, 'data', 'FitFiles', 'Activities', f'{activity_id}_ACTIVITY.fit')
 df = helper_load_fit_file.load_fit_file(path_fit_file)
 
+# View df
 st.dataframe(df)
+
