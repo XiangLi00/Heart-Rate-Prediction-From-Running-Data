@@ -30,7 +30,7 @@ from utils.helper_load_df import load_df_v2, print_column_info_of_all_tables, ge
 
 def page():
     # st.set_page_config(page_title="Weeks Summary", page_icon="📈") # dos not work well
-    
+
     df_weeks_summary = load_df_v2(
         table_name='weeks_summary',
         root_path_db=os.path.join(os.getcwd(), 'data'),
@@ -56,7 +56,9 @@ def page():
 
     st.write("in the page() summmmmary file()")
 
-def page3():
+def page2():
     st.write("weeks_summary.page3(): v5")
 
-st.write("weeks_summary: v4")
+# st.write("weeks_summary: v4")
+    
+page()
