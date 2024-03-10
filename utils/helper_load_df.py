@@ -182,6 +182,9 @@ def load_df_v2(
     """
     Load a DataFrame from a SQLite database table.
 
+    v2 vs. v1:
+    - db_name parameters is automatically infered. Ho? Uses thehe dict_table_name_to_db_name dictionary to map table names to database names.
+
     Parse column data types:
     - DATETIME: Parse as datetime64
     - DATE: Parse as datetime64
