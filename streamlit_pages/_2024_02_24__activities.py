@@ -244,20 +244,22 @@ def plot_specific_activity(df_specific_activity: pd.DataFrame):
     st.plotly_chart(fig, use_container_width=True, config=config)
 
 
-# Append project path to system path
-# print(f"Project root folder: {os.getcwd()}")
-sys.path.append(os.getcwd())  
+def page():
 
-activity_id_selected = st.text_input("Enter activity_id", "14057922527")
+    # Append project path to system path
+    # print(f"Project root folder: {os.getcwd()}")
+    sys.path.append(os.getcwd())  
 
-df_specific_activity = load_df('garmin_activities.db', 'activity_records', root_path_db=os.path.join(os.getcwd(), 'data'),
-                        sql_selected_columns="*",
-                        sql_condition=f"activity_id={activity_id_selected}",)
+    activity_id_selected = st.text_input("Enter activity_id", "14057922527")
 
-st.dataframe(df_specific_activity)
-st.write(f"Shape: {df_specific_activity.shape}")
+    df_specific_activity = load_df('garmin_activities.db', 'activity_records', root_path_db=os.path.join(os.getcwd(), 'data'),
+                            sql_selected_columns="*",
+                            sql_condition=f"activity_id={activity_id_selected}",)
 
-df_specific_activity["pace"] = 60 / (df_specific_activity["speed"])
-df_specific_activity["real_cadence"] = 2*(df_specific_activity["cadence"])
+    st.dataframe(df_specific_activity)
+    st.write(f"Shape: {df_specific_activity.shape}")
 
-plot_specific_activity6(df_specific_activity)
+    df_specific_activity["pace"] = 60 / (df_specific_activity["speed"])
+    df_specific_activity["real_cadence"] = 2*(df_specific_activity["cadence"])
+
+    plot_specific_activity6(df_specific_activity)
