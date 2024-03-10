@@ -18,9 +18,14 @@ import streamlit as st
 from streamlit_js_eval import streamlit_js_eval
 
 
-project_path = os.getcwd()
+st.write(f'annotate_fit: {os.getcwd()}')
 
-#sys.path.append(os.path.join(project_path, 'streamlit_pages'))  
+
+sys.path.append(os.path.join(os.getcwd(), 'streamlit_pages'))  
+
+
+project_path = os.getcwd()
+ 
 
 # from streamlit_pages._2024_03_10_annotate_fit_helper import test1
 from streamlit_pages import _2024_03_10_annotate_fit_helper
