@@ -8,15 +8,6 @@ from pandas.api.types import (
 )
 
 
-import pandas as pd
-import streamlit as st
-from pandas.api.types import (
-    is_categorical_dtype,
-    is_datetime64_any_dtype,
-    is_numeric_dtype,
-    is_object_dtype,
-)
-
 
 def add_df_activities_filtering_ui(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -45,8 +36,10 @@ def add_df_activities_filtering_ui(df: pd.DataFrame) -> pd.DataFrame:
         if is_object_dtype(df[col]):
             try:
                 df[col] = pd.to_datetime(df[col])
-            except Exception:
+            except Exception as e:
                 pass
+                # print(f"Parsing error in column {col}")
+                # print(f'Error in column {col}: {e} ')
 
         if is_datetime64_any_dtype(df[col]):
             df[col] = df[col].dt.tz_localize(None)
