@@ -25,7 +25,6 @@ project_path = os.getcwd()
 
 list_activity_ids = [13738732552, 14057922527]
 activity_id = st.selectbox("Select activity id", list_activity_ids)
-st.write(activity_id)
 
 path_fit_file = os.path.join(project_path, 'data', 'FitFiles', 'Activities', f'{activity_id}_ACTIVITY.fit')
 df = helper_load_fit_file.load_fit_file(path_fit_file)
