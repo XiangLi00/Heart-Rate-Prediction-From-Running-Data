@@ -152,7 +152,7 @@ def plot_specific_activity4(df_specific_activity: pd.DataFrame):
 
 
     # Add Altitude trace
-    fig.add_trace(go.Scatter(x=df_specific_activity["timestamp"], y=df_specific_activity["elevation"], mode='lines', name='Altitude'), 
+    fig.add_trace(go.Scatter(x=df_specific_activity["timestamp"], y=df_specific_activity["altitude"], mode='lines', name='Altitude'), 
                 row=2, col=1, secondary_y=False)
 
     # Add Cadence trace to the same subplot as Altitude
