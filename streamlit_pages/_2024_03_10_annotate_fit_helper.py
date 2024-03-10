@@ -20,10 +20,8 @@ from streamlit_js_eval import streamlit_js_eval
 from utils import helper_load_fit_file, helper_load_specific_df, helper_pandas, helper_streamlit
 # from utils.helper_load_df import load_df_v2, print_column_info_of_all_tables, get_column_info_of_specific_table, generate_report
 
-st.write(os.getcwd())
 
-
-def section_running_activities_show_and_filter(project_path: str):
+def section_running_activities_show_and_filter(project_path: str = os.getcwd()):
     st.header("List of running activities")
     # Load the overview of all activities
     df_activities = helper_load_specific_df.load_df_activities(root_path_db=os.path.join(project_path, 'data'))
@@ -40,6 +38,26 @@ def section_running_activities_show_and_filter(project_path: str):
         st.dataframe(df_running_activities_filtered)
     
     return df_activities, df_running_activities, df_running_activities_filtered 
+
+def section_select_activity_and_retrieve_df(df_activities: pd.DataFrame, project_path: str = os.getcwd()):
+    st.header("View specific activity")
+    # Select specific activity
+    activity_id = st.text_input("Enter activity id", value="14161114490")
+
+    if False:  # Alternative to use drpdown menu
+        list_activity_ids = df_activities["activity_id"].unique().tolist()
+        activity_id = st.selectbox("Select activity id", list_activity_ids)
+    if activity_id not in df_activities["activity_id"].values:
+        st.error(f"Activity id '{activity_id}' not found")
+
+    # Display general information about the activity
+    st.dataframe(df_activities.query('activity_id == @activity_id'))
+
+    # Load the fit file for this activity
+    path_fit_file = os.path.join(project_path, 'data', 'FitFiles', 'Activities', f'{activity_id}_ACTIVITY.fit')
+    df = helper_load_fit_file.load_fit_file(path_fit_file)
+
+    return df
 
 
 def test1(df: pd.DataFrame):
