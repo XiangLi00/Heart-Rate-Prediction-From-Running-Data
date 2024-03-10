@@ -1,14 +1,36 @@
 import pandas as pd
-import streamlit as st
 from pandas.api.types import (
     is_categorical_dtype,
     is_datetime64_any_dtype,
     is_numeric_dtype,
     is_object_dtype,
 )
+import plotly
+import streamlit as st
+from streamlit_js_eval import streamlit_js_eval
+
+
 
 def _is_datetime_utc_column(df, col):
     return pd.api.types.is_datetime64tz_dtype(df[col])
+
+def get_screen_height_and_width():
+    screen_height = streamlit_js_eval(js_expressions='screen.height', key='get_screen_height_javascript')
+    screen_width = streamlit_js_eval(js_expressions='screen.width', key='get_screen_width_javascript')
+    return screen_height, screen_width
+
+def update_screen_height_of_fig_v2(fig: plotly.graph_objs.Figure, height_factor = 0.9, debug=False) -> plotly.graph_objs.Figure:
+    screen_height, screen_width = get_screen_height_and_width()
+    if debug:
+        st.write(f"screen_height: {screen_height}, screen_width: {screen_width}, type_screen_height: {type(screen_height)}")
+
+    if screen_height is not None:
+        try:
+            fig.update_layout(height=screen_height*height_factor)
+        except TypeError:
+            st.write(f"TypeError in helper_streamlit.update_screen_height_of_fig_v2(). Could not update screen height. It still has the default value screeen_height = {screen_height}.")
+    return fig
+
 
 
 def add_df_activities_filtering_ui(df: pd.DataFrame) -> pd.DataFrame:

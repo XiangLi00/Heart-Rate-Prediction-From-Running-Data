@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 import importlib
+import math
 import os
 import sqlite3
 import sys
@@ -58,6 +59,99 @@ def section_select_activity_and_retrieve_df(df_activities: pd.DataFrame, project
     df = helper_load_fit_file.load_fit_file(path_fit_file)
 
     return df
+
+
+def section_show_plotly_timeseries_plot_v2(df: pd.DataFrame):
+    fig = make_subplots(rows=2, cols=1, 
+                        shared_xaxes=True, shared_yaxes=False, 
+                        specs=[[{"secondary_y": True}], [{"secondary_y": True}],],
+                        vertical_spacing=0.03
+                        )
+
+    # Add HR trace
+    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["hr"], mode='lines', name='HR', line=dict(color='crimson')), 
+                row=1, col=1, secondary_y=False)
+    # Add gaspeed4
+    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["gaspeed4_ew_10s"], mode='lines', name='gaspeed4_ew_10s', line=dict(color='lightgreen')), 
+                row=1, col=1, secondary_y=True)
+    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["gaspeed4_ew_120s"], mode='lines', name='gaspeed4_ew_120s', line=dict(color='deepskyblue')), 
+            row=1, col=1, secondary_y=True)
+    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["speed"]-4, mode='lines', name='speed', line=dict(color='darkorange')), 
+        row=1, col=1, secondary_y=True)
+    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["uphill_grade_ew_10s"], mode='lines', name='uphill_grade_ew_10s', line=dict(color='blueviolet')), row=1, col=1, secondary_y=True)
+    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["uphill_grade_ew_120s"], mode='lines', name='uphill_grade_ew_120s', line=dict(color='black')), row=1, col=1, secondary_y=True)
+    
+    
+
+    # Add Altitude trace
+    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["elevation"], mode='lines', name='elevation', line=dict(color='green')),                 row=2, col=1, secondary_y=False)
+    # Add Cadence trace to the same subplot as Altitude
+    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["power100"], mode='lines', name='power100'), 
+                row=2, col=1, secondary_y=True)
+    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["power100_ew_120s"], mode='lines', name='power100_ew_120s'), 
+                row=2, col=1, secondary_y=True)
+
+    # Update layout settings
+    fig = helper_streamlit.update_screen_height_of_fig_v2(fig, height_factor=0.9, debug=False)
+
+    if False: 
+        # Set y-axis titles
+        fig.update_yaxes(title_text="HR", row=1, col=1, secondary_y=False)
+        fig.update_yaxes(range=[math.log10(15), math.log10(3)], title_text="Pace",  type="log", row=1, col=1,secondary_y=True) # , type="log",autorange="reversed",  ,autorange="reversed"
+        fig.update_yaxes(title_text="Altitude", secondary_y=False, row=2, col=1)
+        fig.update_yaxes(range=[150, 200], title_text="Cadence", secondary_y=True, row=2, col=1)
+    fig.update_yaxes(fixedrange=True)
+
+    # Set interactive behaviour
+    fig.update_layout(
+        dragmode='pan',  # zoom, pan, select, lasso
+        hovermode='x unified'  # Enable unified hover mode across all traces
+    )
+    config = {'scrollZoom': True}
+
+    # Show plot
+    st.plotly_chart(fig, use_container_width=True, config=config)
+
+def section_show_plotly_timeseries_plot_v1(df: pd.DataFrame):
+    fig = make_subplots(rows=2, cols=1, 
+                        shared_xaxes=True, shared_yaxes=False, 
+                        specs=[[{"secondary_y": True}], [{"secondary_y": True}],],
+                        vertical_spacing=0.03
+                        )
+
+    # Add HR trace
+    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["hr"], mode='lines', name='HR', line=dict(color='crimson')), 
+                row=1, col=1, secondary_y=False)
+    # Add Pace trace
+    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["speed"], mode='lines', name='sped', line=dict(color='deepskyblue')), 
+                row=1, col=1, secondary_y=True)
+    # Add Altitude trace
+    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["elevation"], mode='lines', name='elevation', line=dict(color='green')),                 row=2, col=1, secondary_y=False)
+    # Add Cadence trace to the same subplot as Altitude
+    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["steps_per_min"], mode='lines', name='Cadence'), 
+                row=2, col=1, secondary_y=True)
+
+    # Update layout settings
+
+    # fig = update_screen_height_of_fig(fig)
+
+    # Set y-axis titles
+    fig.update_yaxes(title_text="HR", row=1, col=1, secondary_y=False)
+    fig.update_yaxes(range=[math.log10(15), math.log10(3)], title_text="Pace",  type="log", row=1, col=1,secondary_y=True) # , type="log",autorange="reversed",  ,autorange="reversed"
+    fig.update_yaxes(title_text="Altitude", secondary_y=False, row=2, col=1)
+    fig.update_yaxes(range=[150, 200], title_text="Cadence", secondary_y=True, row=2, col=1)
+    fig.update_yaxes(fixedrange=True)
+
+    # Set interactive behaviour
+    fig.update_layout(
+        dragmode='pan',  # zoom, pan, select, lasso
+        hovermode='x unified'  # Enable unified hover mode across all traces
+    )
+    config = {'scrollZoom': True}
+
+    # Show plot
+    st.plotly_chart(fig, use_container_width=True, config=config)
+
 
 
 def test1(df: pd.DataFrame):

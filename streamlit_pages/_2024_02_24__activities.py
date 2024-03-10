@@ -124,7 +124,7 @@ def update_screen_height_of_fig(fig: plotly.graph_objs.Figure) -> plotly.graph_o
         try:
             fig.update_layout(height=screen_height*0.9)
         except TypeError as e:
-            st.write(f"TypeError. screeen_height = {screen_height}")
+            st.write(f"TypeError in update_screen_height_of_fig(). screeen_height = {screen_height}")
     return fig
 
 
