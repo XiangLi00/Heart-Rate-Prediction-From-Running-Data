@@ -244,7 +244,7 @@ def plot_specific_activity(df_specific_activity: pd.DataFrame):
     st.plotly_chart(fig, use_container_width=True, config=config)
 
 
-def page():
+def page2():
 
     # Append project path to system path
     # print(f"Project root folder: {os.getcwd()}")
