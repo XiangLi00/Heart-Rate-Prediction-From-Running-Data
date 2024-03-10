@@ -28,7 +28,7 @@ if False:
     module = importlib.import_module("pages." + module_name)
     module.page()
 
-from pages._2024_02_28__weeks_summary import page3
+from pages2._2024_02_28__weeks_summary import page3
 #from _2024_02_28__debug_streamlit_community import page3
 page3()
 
