@@ -50,6 +50,8 @@ if action == 3:
     """
         Dropdown menu to select the page to display
     """
+    st.write(os.getcwd())
+
     folder_path = "streamlit_pages"
     # Retrieve all .py files in folder
     file_names_of_streamlit_pages_with_py_extension = os.listdir(folder_path)
