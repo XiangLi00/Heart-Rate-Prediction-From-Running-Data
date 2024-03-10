@@ -54,7 +54,7 @@ if action == 3:
     # Retrieve all .py files in folder
     file_names_of_streamlit_pages_with_py_extension = os.listdir(folder_path)
     # Remove extionsion. E.g. now get ['_2024_02_24__11_28_monitoring_hr_different_plotting_libs', '_2024_02_24__activities', '_2024_02_28__weeks_summary']
-    file_names_of_streamlit_pages = [os.path.splitext(filename)[0] for filename in filenames if filename.endswith(".py")]
+    file_names_of_streamlit_pages = [os.path.splitext(filename)[0] for filename in file_names_of_streamlit_pages_with_py_extension if filename.endswith(".py")]
 
     streamlit_page_displayed = st.selectbox("Select page to display", file_names_of_streamlit_pages)
 
