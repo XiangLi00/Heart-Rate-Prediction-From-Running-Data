@@ -35,5 +35,7 @@ df = _2024_03_10_annotate_fit_helper.section_select_activity_and_retrieve_df(df_
 st.dataframe(df)
 st.write("df columns: " + str(list(df.columns)))
 
+st.write(f"annotate_fit: {os.getcwd()}")
+
 _2024_03_10_annotate_fit_helper.section_show_plotly_timeseries_plot_v2(df)
 
