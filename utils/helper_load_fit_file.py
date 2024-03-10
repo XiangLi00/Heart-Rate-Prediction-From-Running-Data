@@ -195,7 +195,7 @@ def _load_raw_df_from_fit(path_fit_file: str, frame_name: str = 'record', lat_lo
 
     return df
 
-
+@st.cache_data
 def load_fit_file(fit_file_path: str) -> pd.DataFrame:
     """
     Loads fit fit as DataFrame
