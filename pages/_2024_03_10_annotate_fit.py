@@ -23,8 +23,6 @@ from utils.helper_load_df import load_df_v2, print_column_info_of_all_tables, ge
 
 project_path = os.getcwd()
 
-
-st.write("annotate_fit.py")
 list_activity_ids = [13738732552, 14057922527]
 activity_id = st.selectbox("Select activity id", list_activity_ids)
 st.write(activity_id)
