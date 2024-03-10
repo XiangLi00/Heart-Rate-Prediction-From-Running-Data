@@ -54,7 +54,7 @@ def page():
 
     st.data_editor(df_weeks_summary)
 
-    st.write("in the page() summmmmary file()")
+    st.write("weeks_summary.page()")
 
 def page2():
     st.write("weeks_summary.page3(): v5")

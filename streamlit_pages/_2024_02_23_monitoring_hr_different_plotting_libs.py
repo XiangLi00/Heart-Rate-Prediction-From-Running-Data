@@ -159,3 +159,4 @@ def page():
     # Show the results in Streamlit
     st.bokeh_chart(p, use_container_width=True)
 
+page()
