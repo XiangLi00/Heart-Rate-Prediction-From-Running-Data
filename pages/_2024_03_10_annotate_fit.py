@@ -64,6 +64,8 @@ df = helper_load_fit_file.load_fit_file(path_fit_file)
 # View df
 st.dataframe(df)
 
+test1(df)
+
 # ––––––––––––––– Start Plotting
 
 fig = make_subplots(rows=2, cols=1, 
@@ -104,5 +106,5 @@ config = {'scrollZoom': True}
 st.plotly_chart(fig, use_container_width=True, config=config)
 
 
-test1(df)
+
 
