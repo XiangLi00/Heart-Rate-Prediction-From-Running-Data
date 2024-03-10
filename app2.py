@@ -19,18 +19,21 @@ import streamlit as st
 # print(f"Project root folder: {os.getcwd()}")
 sys.path.append(os.getcwd())  
 
-if False:
+action = 1
+if action == 1:
     # Choose page to display
     module_name = [
         '_2024_02_28__weeks_summary',
-        '_2024_02_24__11_28_monitoring_hr_different_plotting_libs', '_2024_02_24__activities'][0]
+        '_2024_02_24__11_28_monitoring_hr_different_plotting_libs', 
+        '_2024_02_24__activities'
+        ][-1]
     st.header(module_name)
-    module = importlib.import_module("pages." + module_name)
+    module = importlib.import_module("streamlit_pages." + module_name)
     module.page()
+if action == 2:
+    from streamlit_pages._2024_02_28__weeks_summary import page3
+    #from _2024_02_28__debug_streamlit_community import page3
+    page3()
 
-from pages2._2024_02_28__weeks_summary import page3
-#from _2024_02_28__debug_streamlit_community import page3
-page3()
 
-
-st.write("app2.py: v4")
+#st.write("app2.py: v4")
