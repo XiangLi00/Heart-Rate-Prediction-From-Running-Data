@@ -64,5 +64,45 @@ df = helper_load_fit_file.load_fit_file(path_fit_file)
 # View df
 st.dataframe(df)
 
+# ––––––––––––––– Start Plotting
+
+fig = make_subplots(rows=2, cols=1, 
+                    shared_xaxes=True, shared_yaxes=False, 
+                    specs=[[{"secondary_y": True}], [{"secondary_y": True}],],
+                    vertical_spacing=0.03
+                    )
+
+# Add HR trace
+fig.add_trace(go.Scatter(x=df_specific_activity["timestamp"], y=df_specific_activity["hr"], mode='lines', name='HR', line=dict(color='crimson')), 
+            row=1, col=1, secondary_y=False)
+# Add Pace trace
+fig.add_trace(go.Scatter(x=df_specific_activity["timestamp"], y=df_specific_activity["pace"], mode='lines', name='Pace', line=dict(color='deepskyblue')), 
+            row=1, col=1, secondary_y=True)
+# Add Altitude trace
+fig.add_trace(go.Scatter(x=df_specific_activity["timestamp"], y=df_specific_activity["altitude"], mode='lines', name='Altitude', line=dict(color='green')),                 row=2, col=1, secondary_y=False)
+# Add Cadence trace to the same subplot as Altitude
+fig.add_trace(go.Scatter(x=df_specific_activity["timestamp"], y=df_specific_activity["real_cadence"], mode='lines', name='Cadence'), 
+            row=2, col=1, secondary_y=True)
+
+# Update layout settings
+fig.update_layout(
+    dragmode='pan',  # zoom, pan, select, lasso
+    hovermode='x unified'  # Enable unified hover mode across all traces
+)
+fig = update_screen_height_of_fig(fig)
+
+# Set y-axis titles
+fig.update_yaxes(title_text="HR", row=1, col=1, secondary_y=False)
+fig.update_yaxes(range=[math.log10(15), math.log10(3)], title_text="Pace",  type="log", row=1, col=1,secondary_y=True) # , type="log",autorange="reversed",  ,autorange="reversed"
+fig.update_yaxes(title_text="Altitude", secondary_y=False, row=2, col=1)
+fig.update_yaxes(range=[150, 200], title_text="Cadence", secondary_y=True, row=2, col=1)
+fig.update_yaxes(fixedrange=True)
+
+# Your existing code to configure and display the figure
+config = {'scrollZoom': True}
+
+st.plotly_chart(fig, use_container_width=True, config=config)
+
+
 test1(df)
 

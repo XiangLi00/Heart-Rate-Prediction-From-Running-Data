@@ -23,6 +23,6 @@ project_path = os.getcwd()
 
 
 def test1(df: pd.DataFrame):
-    st.write("streamlit_pages.annotate_fit_helper.test1() v2")
+    st.write("streamlit_pages.annotate_fit_helper.test1() v3")
 
 
