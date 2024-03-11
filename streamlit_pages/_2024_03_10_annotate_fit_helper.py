@@ -43,7 +43,7 @@ def section_running_activities_show_and_filter(project_path: str = os.getcwd()):
 def section_select_activity_and_retrieve_df(df_activities: pd.DataFrame, project_path: str = os.getcwd()):
     st.header("View specific activity")
     # Select specific activity
-    activity_id = st.text_input("Enter activity id", value="14161114490")
+    activity_id = st.text_input("Enter activity id", value="14057922527")
 
     if False:  # Alternative to use drpdown menu
         list_activity_ids = df_activities["activity_id"].unique().tolist()
