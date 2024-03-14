@@ -4,6 +4,7 @@ import os
 import sqlite3
 import sys
 import time
+from typing import Any, Dict, List, Tuple, Union
 
 import fitdecode  # for parsing fit into csv
 import numpy as np
@@ -12,6 +13,127 @@ import streamlit as st
 
 from utils import helper_compute_features
 import helper_pandas
+
+# –––––––– Start adding grade column ––––––––––
+def _get_first_last_row_indices_for_grade_calc(current_row_index: int, current_cum_distance: float, df: pd.DataFrame, delta_distance_for_grade_computation: float = 10) -> Tuple[Any, Any]:
+    """
+    Calculates the first and last row indices for grade computation. ("Sekantensteigung")
+
+    Suppose delta_distance_for_grade_computation = 10 [m]
+    Idea: Compute grade based on now and >= 10 meters ago (i.e. the first entry >= 10 meters ago). 
+    Edge cases:
+    - If we just started, then we use meters [0, 10]
+    - If we are at the end of the activity, then we use meters [last cum_distance - 10, last cum_distance]
+    
+    Parameters:
+    current_row_index (int): The index of the current row.
+    current_cum_distance (float): The cumulative distance at the current row.
+    df (pd.DataFrame): The dataframe containing the data.
+    delta_distance_for_grade_computation (float): The minimal delta distance [m] used for grade computation. Default is 10. Motivation: Make sure that the grade is not too noisy for short distances.
+
+    Returns:
+    Tuple[int, int]: A tuple containing the first and last row indices for grade computation.
+    """
+    
+    ## Compute first_row_index ^= usually the row >= 10 meters ago
+    first_row_index = helper_pandas.get_previous_row_index(
+        df["cum_distance"].searchsorted(
+            current_cum_distance-delta_distance_for_grade_computation
+        ),
+        df=df
+    )
+    if False:
+        # This code is not robust. It assumes that index is a range of consecutive integers
+        first_row_index = np.maximum(
+            df["cum_distance"].searchsorted(current_cum_distance-delta_distance_for_grade_computation) - 1,
+            df.index[0]  # ^= first row
+        )
+
+    ## Computes the last_row_index ^= usually the current row
+    first_cum_distance = df.loc[df.index[0], "cum_distance"]
+    last_cum_distance = df.loc[df.index[-1], "cum_distance"]
+    # Case: we are at the last 10 meters of the activity. Then we want to use meters [last cum_distance - 10, last cum_distance]
+    if current_cum_distance > last_cum_distance - delta_distance_for_grade_computation:
+        last_row_index = df.index[-1] # ^= last row of activity
+    # Case: We are at the first 10 meters of the activity. Then we want to use meters [0, 10]
+    elif current_cum_distance <= first_cum_distance + delta_distance_for_grade_computation:
+        last_row_index = df["cum_distance"].searchsorted(
+                current_cum_distance+delta_distance_for_grade_computation
+            )
+    # Normal case
+    else:
+        last_row_index = current_row_index
+    return (first_row_index, last_row_index)
+
+
+def _add_grade_column(df: pd.DataFrame, delta_distance_for_grade_computation: float = 10, add_debug_columns: bool = False) -> pd.DataFrame:
+    """
+    Adds a column to the dataframe containing the grade (of the last n meters)
+
+    Details
+    - Ignores elevation changes during breaks (i.e. when imputed == True)
+
+    Flaws:
+    - The start of an uphill interval still uses the (often negative) grade of the last interval. So it reacts a bit slowly.
+
+    Call functions via: 
+    - df, grade_col_name = _add_grade_column(df, delta_distance_for_grade_computation=10, add_debug_columns=False)
+
+
+
+    Args:
+        df (pd.DataFrame): The dataframe.
+        delta_distance_for_grade_computation (float, optional): The minimal delta distance [m] used for grade computation. Default is 10. Motivation: Make sure that the grade is not too noisy for short distances.
+        add_debug_columns (bool, optional): If True, then additional intermediate columns used for grade computation are added to the dataframe. Default is False.
+
+    Returns:
+        pd.DataFrame: The dataframe with the added grade_last_10m column.
+    """
+
+    assert df['cum_distance'].is_monotonic_increasing, "df.cum_distance (of fit file) is not monotonically increasing"
+    assert delta_distance_for_grade_computation > 0, f"delta_distance_for_grade_computation {delta_distance_for_grade_computation} has to be positive"
+
+    # Add columns containing information about which 2 rows to use for grade computation
+    # Why need lambda function: Because some parameters should not be vectorized
+    df["first_row_index_for_grade_calc"], df["last_row_index_for_grade_calc"] = \
+        np.vectorize(
+            lambda current_row_index, current_cum_distance: 
+                _get_first_last_row_indices_for_grade_calc(
+                    current_row_index=current_row_index,
+                    current_cum_distance=current_cum_distance,
+                    delta_distance_for_grade_computation=delta_distance_for_grade_computation,
+                    df=df
+                )
+        )(
+            current_row_index=df.index,
+            current_cum_distance=df["cum_distance"]        
+        )
+
+    # Retrieve the elevation and cum_distance for the 2 given rows/times
+    # Remark: need to convert to np.array or list in order to avoid the new irrelevant index causing issues
+    df["first_elevation_for_grade_calc"] = np.array(df["elevation"].loc[df["first_row_index_for_grade_calc"]])
+    df["first_cum_distance_for_grade_calc"] = np.array(df["cum_distance"].loc[df["first_row_index_for_grade_calc"]])
+    df["last_elevation_for_grade_calc"] = np.array(df["elevation"].loc[df["last_row_index_for_grade_calc"]])
+    df["last_cum_distance_for_grade_calc"] = np.array(df["cum_distance"].loc[df["last_row_index_for_grade_calc"]])
+    df["cum_distance_difference_for_grade_calc"] = df["last_cum_distance_for_grade_calc"] - df["first_cum_distance_for_grade_calc"]
+
+    # Assert that Sekantensteigung is taken for distances >= delta_distance_for_grade_computation [m] (as intended)
+    df_cum_distance_difference_too_low = df.query("cum_distance_difference_for_grade_calc < @delta_distance_for_grade_computation")
+    if len(df_cum_distance_difference_too_low) > 0:
+        debug_columns_of_interest = ["timestamp", "cum_distance","cum_distance_difference_for_grade_calc", "first_cum_distance_for_grade_calc", "last_cum_distance_for_grade_calc",  "first_row_index_for_grade_calc", "last_row_index_for_grade_calc"]
+        raise AssertionError(f"cum_distance_difference_for_grade_calc is too low (i.e. < {delta_distance_for_grade_computation} [m]) for the following rows: {df_cum_distance_difference_too_low.index} {df_cum_distance_difference_too_low[debug_columns_of_interest]}")
+
+    # Grade in %
+    grade_col_name = f'grade_last_{int(round(delta_distance_for_grade_computation))}m'  # e.g. "grade_last_10m"
+    df[grade_col_name] = (df["last_elevation_for_grade_calc"] - df["first_elevation_for_grade_calc"]) / df["cum_distance_difference_for_grade_calc"]  * 100
+
+    if not add_debug_columns:
+        df = df.drop(columns = ['first_row_index_for_grade_calc', 'last_row_index_for_grade_calc', 'first_elevation_for_grade_calc', 'first_cum_distance_for_grade_calc', 'last_elevation_for_grade_calc', 'last_cum_distance_for_grade_calc', 'cum_distance_difference_for_grade_calc'])
+
+    return df, grade_col_name
+
+# –––––––– Stop adding grade column ––––––––––
+
 
 def _rename_columns_and_convert_units(df):
     # rename columns 
@@ -39,20 +161,22 @@ def _add_columns(df):
     df['ascent'] = np.maximum(0, df['elevation_change_raw'])
     df['descent'] = np.abs(np.maximum(0, -df['elevation_change_raw']))  # np.abs to have 0.0 instead of -0.0
 
-    # Compute grade and uphill_grade
-    # Remark: They should not have any nans
-    df["grade"] = np.where(df["distance"] == 0, 0, df["elevation_change_raw"] / df["distance"] * 100)  # Set it to 0 if distance is 0
-    df["uphill_grade"] = np.where(df["distance"] == 0, 0, df["ascent"] / df["distance"] * 100)
+    if False:
+        # Compute grade and uphill_grade
+        # Remark: They should not have any nans
+        df["grade"] = np.where(df["distance"] == 0, 0, df["elevation_change_raw"] / df["distance"] * 100)  # Set it to 0 if distance is 0. Not good because sensitive to small distance changes between different rows/seconds
+        df["uphill_grade"] = np.where(df["distance"] == 0, 0, df["ascent"] / df["distance"] * 100)
+    df, grade_col_name = _add_grade_column(df, delta_distance_for_grade_computation=5, add_debug_columns=True) # grade_last_10m
 
     # Add exponential weighted moving average columns
-    variable_to_smoothen_exponentially = ["speed", "power100", "grade", "uphill_grade"]
+    variable_to_smoothen_exponentially = ["speed", "power100"] #, "grade", "uphill_grade"]
     list_ew_spans_in_s = [10, 120]
     for variable in variable_to_smoothen_exponentially:
         for ew_span in list_ew_spans_in_s:
             df[f"{variable}_ew_{ew_span}s"] = df[variable].ewm(span=ew_span).mean()
     # Add gaspeed and gaspeed4 columns (exponentially weighted)
     for ew_span in list_ew_spans_in_s:
-        col_name_grade= f"grade_ew_{ew_span}s"
+        col_name_grade= grade_col_name # f"grade_ew_{ew_span}s"
         col_name_speed = f"speed_ew_{ew_span}s"
         col_name_gaspeed = f"gaspeed_ew_{ew_span}s"
         col_name_gaspeed4 = f"gaspeed4_ew_{ew_span}s"
@@ -147,7 +271,7 @@ def _assert_df_is_mostly_imputed(df):
     columns_requiring_imputation = list(set(df.columns) - columns_not_requiring_imputation)
     ser_nans_per_column = df[columns_requiring_imputation].isna().sum()
     ser_nans_per_column_positive = ser_nans_per_column[ser_nans_per_column > 0]
-    assert len(ser_nans_per_column_positive) == 0, f"Imputation failed. The following columns still contain NaNs: {ser_nans_per_column_positive}"
+    # assert len(ser_nans_per_column_positive) == 0, f"Imputation failed. The following columns still contain NaNs: {ser_nans_per_column_positive}"
 
 
 

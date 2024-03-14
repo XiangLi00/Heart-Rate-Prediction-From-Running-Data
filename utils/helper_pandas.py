@@ -67,3 +67,23 @@ def adjust_excel_column_width(excel_filename, max_width=60):
 
     # Save the workbook
     workbook.save(excel_filename)
+
+def get_previous_row_index(index_value, df: pd.DataFrame):
+    """
+    Given an index value, returns the previous index value (if existing).
+
+    Used in grade computation
+
+    Args:
+        index_value (int): The index value.
+        df (pd.DataFrame): The dataframe.
+
+    Returns:
+        int: The previous row index.
+    """
+    current_index_number = df.index.get_loc(index_value)
+    if current_index_number == 0:
+        previous_index_number_if_existing = 0
+    else:
+        previous_index_number_if_existing = current_index_number - 1
+    return df.index[previous_index_number_if_existing]
