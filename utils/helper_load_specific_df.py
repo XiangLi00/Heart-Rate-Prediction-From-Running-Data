@@ -36,7 +36,7 @@ def load_df_activities(root_path_db: str) -> pd.DataFrame:
     # Sort by start_time
     df = df.sort_values(by='start_time', ascending=False)
 
-    # drop the columns 'max_temperature', 'min_temperature', 'avg_temperature' if they exist. Otherwise, an informative error will be raised.
+    # drop the columns 'max_temperature', 'min_temperature', 'avg_temperature' if they exist. Otherwise, an  error will be raised.
     columns_to_drop = ['avg_rr', 'max_rr', 'description',
        'type', 'course_id', 'laps', 'device_serial_number', 'self_eval_feel',
        'self_eval_effort', 'max_temperature', 'min_temperature', 'avg_temperature', 'hr_zones_method',

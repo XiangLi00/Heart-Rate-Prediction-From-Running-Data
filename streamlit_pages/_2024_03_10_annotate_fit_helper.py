@@ -62,12 +62,13 @@ def section_select_activity_and_retrieve_df(df_activities: pd.DataFrame, project
 
 
 def section_show_plotly_timeseries_plot_v2(df: pd.DataFrame):
-    fig = make_subplots(rows=2, cols=1, 
+    fig = make_subplots(rows=3, cols=1, 
                         shared_xaxes=True, shared_yaxes=False, 
-                        specs=[[{"secondary_y": True}], [{"secondary_y": True}],],
+                        specs=[[{"secondary_y": True}], [{"secondary_y": True}], [{"secondary_y": True}],],
                         vertical_spacing=0.03
                         )
 
+    ## First subplot
     # Add HR trace
     fig.add_trace(go.Scatter(x=df["timestamp"], y=df["hr"], mode='lines', name='HR', line=dict(color='crimson')), 
                 row=1, col=1, secondary_y=False)
@@ -80,16 +81,23 @@ def section_show_plotly_timeseries_plot_v2(df: pd.DataFrame):
         row=1, col=1, secondary_y=True)
     fig.add_trace(go.Scatter(x=df["timestamp"], y=df["uphill_grade_ew_10s"], mode='lines', name='uphill_grade_ew_10s', line=dict(color='blueviolet')), row=1, col=1, secondary_y=True)
     fig.add_trace(go.Scatter(x=df["timestamp"], y=df["uphill_grade_ew_120s"], mode='lines', name='uphill_grade_ew_120s', line=dict(color='black')), row=1, col=1, secondary_y=True)
+    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["grade_ew_120s"], mode='lines', name='grade_ew_120s', line=dict(color='black')), row=1, col=1, secondary_y=True)
     
     
-
-    # Add Altitude trace
+    ## Second subplot
+    # Add Elevation trace
     fig.add_trace(go.Scatter(x=df["timestamp"], y=df["elevation"], mode='lines', name='elevation', line=dict(color='green')),                 row=2, col=1, secondary_y=False)
-    # Add Cadence trace to the same subplot as Altitude
+    # Add Power trace
     fig.add_trace(go.Scatter(x=df["timestamp"], y=df["power100"], mode='lines', name='power100'), 
                 row=2, col=1, secondary_y=True)
     fig.add_trace(go.Scatter(x=df["timestamp"], y=df["power100_ew_120s"], mode='lines', name='power100_ew_120s'), 
                 row=2, col=1, secondary_y=True)
+    
+
+    ## Third subplot
+    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["elevation_change"], mode='lines', name='elevation_change', line=dict(color='green')), row=3, col=1, secondary_y=False)
+    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["grade_ew_10s"], mode='lines', name='grade_ew_10s'), row=3, col=1, secondary_y=True)
+    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["grade_ew_120s"], mode='lines', name='grade_ew_120s', line=dict(color='black')), row=3, col=1, secondary_y=True)
 
     # Update layout settings
     fig = helper_streamlit.update_screen_height_of_fig_v2(fig, height_factor=0.9, debug=False)
@@ -100,6 +108,7 @@ def section_show_plotly_timeseries_plot_v2(df: pd.DataFrame):
         fig.update_yaxes(range=[math.log10(15), math.log10(3)], title_text="Pace",  type="log", row=1, col=1,secondary_y=True) # , type="log",autorange="reversed",  ,autorange="reversed"
         fig.update_yaxes(title_text="Altitude", secondary_y=False, row=2, col=1)
         fig.update_yaxes(range=[150, 200], title_text="Cadence", secondary_y=True, row=2, col=1)
+    fig.update_yaxes(range=[-20,20], title_text="(GA)Speed and Grade", row=1, col=1, secondary_y=True) 
     fig.update_yaxes(fixedrange=True)
 
     # Set interactive behaviour
@@ -113,6 +122,9 @@ def section_show_plotly_timeseries_plot_v2(df: pd.DataFrame):
     st.plotly_chart(fig, use_container_width=True, config=config)
 
 def section_show_plotly_timeseries_plot_v1(df: pd.DataFrame):
+
+    
+
     fig = make_subplots(rows=2, cols=1, 
                         shared_xaxes=True, shared_yaxes=False, 
                         specs=[[{"secondary_y": True}], [{"secondary_y": True}],],
@@ -137,7 +149,7 @@ def section_show_plotly_timeseries_plot_v1(df: pd.DataFrame):
 
     # Set y-axis titles
     fig.update_yaxes(title_text="HR", row=1, col=1, secondary_y=False)
-    fig.update_yaxes(range=[math.log10(15), math.log10(3)], title_text="Pace",  type="log", row=1, col=1,secondary_y=True) # , type="log",autorange="reversed",  ,autorange="reversed"
+    fig.update_yaxes(range=[math.log10(15), math.log10(3)], title_text="Pace",  type="log", row=1, col=1, secondary_y=True)  # , type="log",autorange="reversed",  ,autorange="reversed"
     fig.update_yaxes(title_text="Altitude", secondary_y=False, row=2, col=1)
     fig.update_yaxes(range=[150, 200], title_text="Cadence", secondary_y=True, row=2, col=1)
     fig.update_yaxes(fixedrange=True)
@@ -151,6 +163,10 @@ def section_show_plotly_timeseries_plot_v1(df: pd.DataFrame):
 
     # Show plot
     st.plotly_chart(fig, use_container_width=True, config=config)
+
+
+
+    
 
 
 

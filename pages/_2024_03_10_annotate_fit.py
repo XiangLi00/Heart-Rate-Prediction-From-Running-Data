@@ -35,7 +35,13 @@ df = _2024_03_10_annotate_fit_helper.section_select_activity_and_retrieve_df(df_
 st.dataframe(df)
 st.write("df columns: " + str(list(df.columns)))
 
-st.write(f"annotate_fit: {os.getcwd()}")
+st.write(f"annotate_fit – current working directory: {os.getcwd()}")
 
 _2024_03_10_annotate_fit_helper.section_show_plotly_timeseries_plot_v2(df)
+
+# seaborn scatterplot of df columns distance vs elevation_change. color by imputed. figsize=(10, 5)
+# fig_seaborn, ax = plt.subplots(figsize=(10, 5))
+fig = plt.figure(figsize=(10, 5))
+sns.scatterplot(data=df, x='distance', y='elevation_change')  # , hue='imputed')
+st.pyplot(fig)
 

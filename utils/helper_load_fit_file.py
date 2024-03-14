@@ -35,13 +35,13 @@ def _add_columns(df):
 
     # Remark: These should not have any nans
     df['distance'] = df['cum_distance'].diff().fillna(0)
-    df['elevation_change'] = df['elevation'].diff().fillna(0)
-    df['ascent'] = np.maximum(0, df['elevation_change'])
-    df['descent'] = np.abs(np.maximum(0, -df['elevation_change']))  # np.abs to have 0.0 instead of -0.0
+    df['elevation_change_raw'] = df['elevation'].diff().fillna(0)
+    df['ascent'] = np.maximum(0, df['elevation_change_raw'])
+    df['descent'] = np.abs(np.maximum(0, -df['elevation_change_raw']))  # np.abs to have 0.0 instead of -0.0
 
     # Compute grade and uphill_grade
     # Remark: They should not have any nans
-    df["grade"] = np.where(df["distance"] == 0, 0, df["elevation_change"] / df["distance"] * 100)  # Set it to 0 if distance is 0
+    df["grade"] = np.where(df["distance"] == 0, 0, df["elevation_change_raw"] / df["distance"] * 100)  # Set it to 0 if distance is 0
     df["uphill_grade"] = np.where(df["distance"] == 0, 0, df["ascent"] / df["distance"] * 100)
 
     # Add exponential weighted moving average columns
@@ -116,7 +116,7 @@ def _impute_df_from_fit(df):
 
     # Apply imputation method 2: linear interpolation
     columns_to_impute_linearly = [
-        "cum_distance", "elevation", "hr", "cum_power", "position_lat", "position_long"
+        "cum_distance", "hr", "elevation", "cum_power", "position_lat", "position_long"
         ]
     # Assert that the this columns exist in df
     assert set(columns_to_impute_linearly).issubset(set(df.columns)), f"The columns {set(columns_to_impute_linearly)- set(df.columns)} do not exist in the dataframe. Existing columns are {list(df.columns)}."
@@ -126,7 +126,7 @@ def _impute_df_from_fit(df):
 
     # Apply imputation method 3: backward fill
     columns_to_impute_via_backwards_fill = [
-        "cum_power", 
+        "cum_power",
         ]
     # Assert that the this columns exist in df
     assert set(columns_to_impute_via_backwards_fill).issubset(set(df.columns)), f"The columns {set(columns_to_impute_via_backwards_fill)- set(df.columns)} do not exist in the dataframe. Existing columns are {list(df.columns)}."
