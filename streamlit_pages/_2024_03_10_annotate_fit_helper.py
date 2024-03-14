@@ -79,8 +79,9 @@ def section_show_plotly_timeseries_plot_v2(df: pd.DataFrame):
             row=1, col=1, secondary_y=True)
     fig.add_trace(go.Scatter(x=df["timestamp"], y=df["speed"]-4, mode='lines', name='speed', line=dict(color='darkorange')), 
         row=1, col=1, secondary_y=True)
-    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["uphill_grade_ew_10s"], mode='lines', name='uphill_grade_ew_10s', line=dict(color='blueviolet')), row=1, col=1, secondary_y=True)
-    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["uphill_grade_ew_120s"], mode='lines', name='uphill_grade_ew_120s', line=dict(color='black')), row=1, col=1, secondary_y=True)
+    #fig.add_trace(go.Scatter(x=df["timestamp"], y=df["uphill_grade_ew_10s"], mode='lines', name='uphill_grade_ew_10s', line=dict(color='blueviolet')), row=1, col=1, secondary_y=True)
+    #fig.add_trace(go.Scatter(x=df["timestamp"], y=df["uphill_grade_ew_120s"], mode='lines', name='uphill_grade_ew_120s', line=dict(color='black')), row=1, col=1, secondary_y=True)
+    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["grade_last_5s"], mode='lines', name='grade_last_5s', line=dict(color='blueviolet')), row=1, col=1, secondary_y=True)
     fig.add_trace(go.Scatter(x=df["timestamp"], y=df["grade_ew_120s"], mode='lines', name='grade_ew_120s', line=dict(color='black')), row=1, col=1, secondary_y=True)
     
     
