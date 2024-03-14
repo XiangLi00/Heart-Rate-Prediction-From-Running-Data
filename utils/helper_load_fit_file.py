@@ -159,7 +159,7 @@ def _add_columns(df):
     df['distance'] = df['cum_distance'].diff().fillna(0)
     df['elevation_change_raw'] = df['elevation'].diff().fillna(0)
     # Setting elevation_change=0 for imputed rows (^= paused times). Reason: Otherwise grade computation just after break is very off
-    df["elevation_change"] = (~df["imputed"]).astype(int) * df["elevation_change_raw"] * df["elevation_change_raw"].abs()>0.2
+    df["elevation_change"] = (~df["imputed"]).astype(int) * df["elevation_change_raw"] * (df["elevation_change_raw"].abs() > 0.2)
     # cum_elevation_change is similar to elevation if there were no breaks
     df['cum_elevation_change'] = df['elevation_change'].cumsum()
     df['ascent'] = np.maximum(0, df['elevation_change'])
