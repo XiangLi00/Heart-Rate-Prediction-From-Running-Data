@@ -169,7 +169,7 @@ def _add_columns(df):
     df, grade_col_name = _add_grade_column(df, delta_distance_for_grade_computation=5, add_debug_columns=True) # grade_last_10m
 
     # Add exponential weighted moving average columns
-    variable_to_smoothen_exponentially = ["speed", "power100"] #, "grade", "uphill_grade"]
+    variable_to_smoothen_exponentially = ["speed", "power100", "grade", "uphill_grade"]
     list_ew_spans_in_s = [10, 120]
     for variable in variable_to_smoothen_exponentially:
         for ew_span in list_ew_spans_in_s:
