@@ -271,7 +271,7 @@ def _assert_df_is_mostly_imputed(df):
     columns_requiring_imputation = list(set(df.columns) - columns_not_requiring_imputation)
     ser_nans_per_column = df[columns_requiring_imputation].isna().sum()
     ser_nans_per_column_positive = ser_nans_per_column[ser_nans_per_column > 0]
-    # assert len(ser_nans_per_column_positive) == 0, f"Imputation failed. The following columns still contain NaNs: {ser_nans_per_column_positive}"
+    assert len(ser_nans_per_column_positive) == 0, f"Imputation failed. The following columns still contain NaNs: {ser_nans_per_column_positive}"
 
 
 
