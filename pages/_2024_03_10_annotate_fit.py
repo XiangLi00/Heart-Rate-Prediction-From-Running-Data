@@ -23,22 +23,25 @@ from streamlit_pages import _2024_03_10_annotate_fit_helper
 from utils import helper_load_fit_file, helper_load_specific_df, helper_pandas, helper_streamlit
 # from utils.helper_load_df import load_df_v2, print_column_info_of_all_tables, get_column_info_of_specific_table, generate_report
 
-def dataframe_with_selections(df):
-    df_with_selections = df.copy()
-    df_with_selections.insert(0, "Select", False)
+if False:
+    def dataframe_with_selections(df):
+        df_with_selections = df.copy()
+        df_with_selections.insert(0, "Select", False)
 
-    # Get dataframe row-selections from user with st.data_editor
-    edited_df = st.data_editor(
-        df_with_selections,
-        hide_index=True,
-        column_config={"Select": st.column_config.CheckboxColumn(required=True)},
-        disabled=df.columns,
-    )
+        # Get dataframe row-selections from user with st.data_editor
+        edited_df = st.data_editor(
+            df_with_selections,
+            hide_index=True,
+            column_config={"Select": st.column_config.CheckboxColumn(required=True)},
+            disabled=df.columns,
+        )
 
-    st.write(edited_df.Select)
-    # Filter the dataframe using the temporary column, then drop the column
-    selected_rows = edited_df[edited_df.Select]
-    return selected_rows.drop('Select', axis=1)
+        st.write(edited_df.Select)
+        # Filter the dataframe using the temporary column, then drop the column
+        selected_rows = edited_df[edited_df.Select]
+        return selected_rows.drop('Select', axis=1)
+
+    st.write(dataframe_with_selections(df))
 
 # Section: show and filter running activities
 df_activities, df_running_activities, df_running_activities_filtered = _2024_03_10_annotate_fit_helper.section_running_activities_show_and_filter()
@@ -49,10 +52,6 @@ df = _2024_03_10_annotate_fit_helper.section_select_activity_and_retrieve_df(df_
 # View df
 st.dataframe(df)
 st.write("df columns: " + str(list(df.columns)))
-
-
-
-st.write(dataframe_with_selections(df))
 
 
 # st.write(f"annotate_fit – current working directory: {os.getcwd()}")
