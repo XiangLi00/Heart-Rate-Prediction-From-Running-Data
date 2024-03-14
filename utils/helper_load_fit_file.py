@@ -170,7 +170,7 @@ def _add_columns(df):
         # Remark: They should not have any nans
         df["grade"] = np.where(df["distance"] == 0, 0, df["elevation_change_raw"] / df["distance"] * 100)  # Set it to 0 if distance is 0. Not good because sensitive to small distance changes between different rows/seconds
         df["uphill_grade"] = np.where(df["distance"] == 0, 0, df["ascent"] / df["distance"] * 100)
-    df, grade_col_name = _add_grade_column(df, delta_distance_for_grade_computation=5, add_debug_columns=False) # grade_last_10m
+    df, grade_col_name = _add_grade_column(df, delta_distance_for_grade_computation=20, add_debug_columns=False) # grade_last_10m
 
     # Add exponential weighted moving average columns
     variable_to_smoothen_exponentially = ["speed", "power100", grade_col_name]

@@ -81,7 +81,7 @@ def section_show_plotly_timeseries_plot_v3(df: pd.DataFrame):
         row=1, col=1, secondary_y=True)
     #fig.add_trace(go.Scatter(x=df["timestamp"], y=df["uphill_grade_ew_10s"], mode='lines', name='uphill_grade_ew_10s', line=dict(color='blueviolet')), row=1, col=1, secondary_y=True)
     #fig.add_trace(go.Scatter(x=df["timestamp"], y=df["uphill_grade_ew_120s"], mode='lines', name='uphill_grade_ew_120s', line=dict(color='black')), row=1, col=1, secondary_y=True)
-    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["grade_last_5m"], mode='lines', name='grade_last_5m', line=dict(color='blueviolet')), row=1, col=1, secondary_y=True)
+    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["grade_last_20m"], mode='lines', name='grade_last_20m', line=dict(color='blueviolet')), row=1, col=1, secondary_y=True)
     #fig.add_trace(go.Scatter(x=df["timestamp"], y=df["grade_ew_120s"], mode='lines', name='grade_ew_120s', line=dict(color='black')), row=1, col=1, secondary_y=True)
     
     
