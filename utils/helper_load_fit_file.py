@@ -158,15 +158,19 @@ def _add_columns(df):
     # Remark: These should not have any nans
     df['distance'] = df['cum_distance'].diff().fillna(0)
     df['elevation_change_raw'] = df['elevation'].diff().fillna(0)
-    df['ascent'] = np.maximum(0, df['elevation_change_raw'])
-    df['descent'] = np.abs(np.maximum(0, -df['elevation_change_raw']))  # np.abs to have 0.0 instead of -0.0
+    # Setting elevation_change=0 for imputed rows (^= paused times). Reason: Otherwise grade computation just after break is very off
+    df["elevation_change"] = (~df["imputed"]).astype(int) * df["elevation_change_raw"]
+    # cum_elevation_change is similar to elevation if there were no breaks
+    df['cum_elevation_change'] = df['elevation_change'].cumsum()
+    df['ascent'] = np.maximum(0, df['elevation_change'])
+    df['descent'] = np.abs(np.maximum(0, -df['elevation_change']))  # np.abs to have 0.0 instead of -0.0
 
     if False:
         # Compute grade and uphill_grade
         # Remark: They should not have any nans
         df["grade"] = np.where(df["distance"] == 0, 0, df["elevation_change_raw"] / df["distance"] * 100)  # Set it to 0 if distance is 0. Not good because sensitive to small distance changes between different rows/seconds
         df["uphill_grade"] = np.where(df["distance"] == 0, 0, df["ascent"] / df["distance"] * 100)
-    df, grade_col_name = _add_grade_column(df, delta_distance_for_grade_computation=5, add_debug_columns=True) # grade_last_10m
+    df, grade_col_name = _add_grade_column(df, delta_distance_for_grade_computation=5, add_debug_columns=False) # grade_last_10m
 
     # Add exponential weighted moving average columns
     variable_to_smoothen_exponentially = ["speed", "power100", grade_col_name]
