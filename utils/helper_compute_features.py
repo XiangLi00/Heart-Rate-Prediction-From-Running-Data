@@ -8,7 +8,9 @@ import time
 import numpy as np
 import pandas as pd
 import scipy
+import streamlit as st
 
+# @st.cache_resource
 def get_spline_for_gap_computation():
     """
     Used to calculate GAP based of Grade and Pace (i.e. computes the speed correction factor)

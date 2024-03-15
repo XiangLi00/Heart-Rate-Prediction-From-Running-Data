@@ -216,7 +216,7 @@ def _impute_df_from_fit(df):
     – Some columns don't require imputation (columns_not_requiring_imputation)
     """
 
-    # Add column. imputed=True ^= entirue row was imputed
+    # Add column. imputed=True ^= entire row was imputed
     df["imputed"] = False
 
     df = df.set_index('timestamp').resample('s').asfreq().reset_index()
