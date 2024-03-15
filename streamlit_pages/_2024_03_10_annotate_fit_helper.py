@@ -18,7 +18,7 @@ import seaborn as sns
 import streamlit as st
 from streamlit_js_eval import streamlit_js_eval
 
-from utils import helper_load_fit_file, helper_load_specific_df, helper_pandas, helper_streamlit
+from utils import helper_load_fit_file_v1, helper_load_specific_df, helper_pandas, helper_streamlit
 # from utils.helper_load_df import load_df_v2, print_column_info_of_all_tables, get_column_info_of_specific_table, generate_report
 
 
@@ -28,7 +28,7 @@ def section_running_activities_show_and_filter(project_path: str = os.getcwd()):
     df_activities = helper_load_specific_df.load_df_activities(root_path_db=os.path.join(project_path, 'data'))
 
     # Filter only running activities
-    # Reason: Add this because otherwise helper_load_fit_file.load_fit_file() otherwise expects columns that don't exist (e.g. {'activity_type', 'power', 'step_length'} for walking/hiking activities and  ('cadence', 'fractional_cadence'), additionally for other activities)
+    # Reason: Add this because otherwise helper_load_fit_file_v1.load_fit_file() otherwise expects columns that don't exist (e.g. {'activity_type', 'power', 'step_length'} for walking/hiking activities and  ('cadence', 'fractional_cadence'), additionally for other activities)
     df_running_activities = df_activities.query('sport == "running"')  
 
     # Add filtering UI
@@ -56,7 +56,7 @@ def section_select_activity_and_retrieve_df(df_activities: pd.DataFrame, project
 
     # Load the fit file for this activity
     path_fit_file = os.path.join(project_path, 'data', 'FitFiles', 'Activities', f'{activity_id}_ACTIVITY.fit')
-    df = helper_load_fit_file.load_fit_file(path_fit_file)
+    df = helper_load_fit_file_v1.load_fit_file(path_fit_file)
 
     return df
 

@@ -103,11 +103,17 @@ def add_df_activities_filtering_ui(df: pd.DataFrame) -> pd.DataFrame:
                 _min = float(df[column].min())
                 _max = float(df[column].max())
                 step = (_max - _min) / 100
+
+                if column == "distance":
+                    default_min_max = (5.0, _max)
+                else:
+                    default_min_max = (_min, _max)
+
                 user_num_input = right.slider(
                     f"Values for {column}",
                     _min,
                     _max,
-                    (_min, _max),
+                    default_min_max,
                     step=step,
                 )
                 df = df[df[column].between(*user_num_input)]
