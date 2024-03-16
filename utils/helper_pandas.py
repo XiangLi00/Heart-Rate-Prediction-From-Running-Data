@@ -164,3 +164,28 @@ def impute_drop_or_assert_columns(
         assert_df_is_mostly_imputed(df=df, columns_not_requiring_imputation=columns_not_requiring_imputation)
 
     return df
+
+def mean_with_zero_imputation(x: np.ndarray, expected_length: int):
+    """
+    Calculate the mean of an array with zero imputation if the array length is less than the expected length.
+
+    Used for compute rolling average imputed with 0
+
+    Parameters:
+    x (np.ndarray): The input array.
+    expected_length (int): The expected length of the array.
+
+    Returns:
+    float: The mean of the array with zero imputation if necessary.
+
+    Raises:
+    ValueError: If the length of the array is greater than the expected length.
+    """
+    window_size_received = len(x)
+    if window_size_received == expected_length:
+        return x.mean()
+    elif window_size_received < expected_length:
+        # implictly impute with 0 to make sure we compute the mean of the full expected window_size
+        return window_size_received/expected_length * x.mean()
+    else:
+        raise ValueError(f'window_size_received = {window_size_received} > expected_length = {expected_length}')

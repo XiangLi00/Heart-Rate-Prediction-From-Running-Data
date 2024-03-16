@@ -20,6 +20,7 @@ class Activity():
     def __init__(self, id: int, config: Dict[str, Any], project_path: str) -> None:
         self.id = id
         self.config = config
+        self.df_special_col_names = pd.DataFrame()
 
         path_fit_file = os.path.join(project_path, 'data', 'FitFiles', 'Activities', f'{id}_ACTIVITY.fit')
 
@@ -86,7 +87,7 @@ class Activity():
         self.df["elevation_change"]  = scipy.ndimage.gaussian_filter1d(self.df["elevation_change_interm"], sigma=self.config["df__elevation_change__gaussian_kernel_sigma"])
         self.df["cum_elevation_change"] = self.df["elevation_change"].cumsum()
         # Drop raw columns unless specified otherwise
-        if not "df__keep_raw_elevation_distance_columns_for_debugging" in config.keys() or self.config["df__keep_raw_elevation_distance_columns_for_debugging"] == False:
+        if (not "df__keep_raw_elevation_distance_columns_for_debugging" in config.keys()) or self.config["df__keep_raw_elevation_distance_columns_for_debugging"] == False:
             self.df = self.df.drop(columns=['elevation_change_raw', 'elevation_change_interm', 'elevation_change'])
 
         # Add column speed and cum_distance (by smoothing distance_raw)
@@ -95,12 +96,16 @@ class Activity():
         self.df["speed"] = self.df["distance"] * 3.6  # km/h since distance is given in m (for the past 1 second)
         self.df["cum_distance"] = self.df["distance"].cumsum()
         # Drop raw columns unless specified otherwise
-        if not "df__keep_raw_elevation_distance_columns_for_debugging" in config.keys() or self.config["df__keep_raw_elevation_distance_columns_for_debugging"] == False:
+        if (not "df__keep_raw_elevation_distance_columns_for_debugging" in config.keys()) or self.config["df__keep_raw_elevation_distance_columns_for_debugging"] == False:
             self.df = self.df.drop(columns=['distance_raw', 'distance'])
 
+
+        # Adds column grade
+        # Formula: As Sekantensteigung between now and >= e.g., 5 meters ago
+        # Param (df__grade__delta_distance_for_grade_computation): If it is 100m, then grade information is "lagging behind" about 100m/2. Around 5 is good. Need it to be >0.5 because otherwise small delta distance can create a lot of noisy/huge grades.
         self.df, grade_col_name = add_grade_column(
             df=self.df,
-            delta_distance_for_grade_computation=5,
+            delta_distance_for_grade_computation=self.config["df__grade__delta_distance_for_grade_computation"],
             custom_grade_col_name="grade",
             col_name_cum_distance="cum_distance",
             col_name_elevation="cum_elevation_change",
@@ -109,12 +114,12 @@ class Activity():
 
         # Print a warning in case absolute grade is unrealistically high
         threshold_abs_grade = 50
-        high_grade_rows = self.df[abs(self.df[grade_col_name]) > threshold_abs_grade][["timestamp", grade_col_name]]
+        high_grade_rows = self.df[abs(self.df["grade"]) > threshold_abs_grade][["timestamp", "grade"]]
         if not high_grade_rows.empty:
             print(f"Warning: The following rows have an absolute grade greater than {threshold_abs_grade}")
             print(high_grade_rows)
         spline_object = helper_compute_features.get_spline_for_gap_computation()
-        self.df["gaspeed"] = self.df["speed"] * spline_object(self.df[grade_col_name])
+        self.df["gaspeed"] = self.df["speed"] * spline_object(self.df["grade"])
  
 
 
@@ -127,8 +132,71 @@ class Activity():
             assert_most_columns_imputed=True
         )
 
+    def add_rolling_avg_columns(
+        self,
+        base_vars: Union[List[str], None] = None,
+        window_lengths: Union[List[int], None] = None
+    ) -> None:
+        """
+        Adds rolling average columns to the dataframe based on the specified configuration.
 
+        Parameters:
+        - rolling_avg_base_vars: Union[List[str], None]. Specify for which variables to compute rolling average. 
+        - rolling_avg_window_lengths: Union[List[int], None]. Specify for which previous seconds to compute rolling average.
+        E.g. [10, 30] means: first use seconds 0-9 earlier, then use seconds 10-39 earlier.
 
+        The rolling average columns are added to the self.df dataframe, and the column name information is stored in self.df_special_col_names.
+        """
+
+        # Set default values from self.config if parameters are not provided
+        try:
+            window_lengths = window_lengths or self.config["df__rolling_avg_window_lengths"]
+            if not base_vars:
+                base_vars = self.config["df__rolling_avg_base_vars"]  # Equivalent syntax
+            
+        except KeyError as e:
+            raise ValueError("Both rolling_avg_base_vars and rolling_avg_window_lengths must be provided either as arguments or in self.config.") from e
+
+        # Prepare to add column name information to self.df_special_col_names
+        if not hasattr(self, "df_special_col_names"):
+            self.df_special_col_names = pd.DataFrame()
+        list_for_creating_df_special_col_names = []
+
+        # Decode configuration. Retrieve for which past seconds to compute rolling average
+        rolling_avg_first_previous_times = np.cumsum(window_lengths).tolist()  # e.g. [10, 40], when df__rolling_avg_base_vars=[10, 30]
+        rolling_avg_last_previous_times = [0] + rolling_avg_first_previous_times[:-1]  # e.g. [0, 10]
+
+        # Add columns such as "gaspeed_avg_last_29-10s"
+        # Do this for all base_vars and window_lengths
+        for base_var in base_vars:
+            for i in range(len(window_lengths)):
+
+                first_previous_time = rolling_avg_first_previous_times[i]-1  # i.e. how many seconds ago to start the rolling average
+                last_previous_time = rolling_avg_last_previous_times[i]
+                window_size = first_previous_time+1 - last_previous_time
+
+                # print(f'Compute rolling averge of the rows ({first_previous_time}, {last_previous_time}] above current row')
+
+                col_name = f"gaspeed_avg_last_{first_previous_time}-{last_previous_time}s"
+
+                if first_previous_time+1 > self.df.shape[0]:
+                    self.df[col_name] = 0.0
+                    # print(f'The dataframe only has length {len(df2)}. Therefore, the entire column is set to 0.')
+                    continue
+
+                # Compute rolling average
+                self.df[col_name] = self.df["gaspeed"].shift(last_previous_time).fillna(0).rolling(window=window_size, min_periods=1).apply(helper_pandas.mean_with_zero_imputation, raw=True, kwargs={"expected_length": window_size})
+
+                list_for_creating_df_special_col_names.append({
+                    "base_var": base_var,
+                    "method": "shifted_rolling_avg",
+                    "first_previous_time": first_previous_time,
+                    "last_previous_time": last_previous_time,
+                    "col_name": col_name
+                })
+        
+        # add column name information
+        self.df_special_col_names = pd.concat([self.df_special_col_names, pd.DataFrame(list_for_creating_df_special_col_names)], axis=0, ignore_index=True)
 
 
 def resample_each_second_and_add_imputed_column(df: pd.DataFrame) -> pd.DataFrame:
