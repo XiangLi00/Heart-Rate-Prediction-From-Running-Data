@@ -225,10 +225,30 @@ def section_show_plotly_timeseries_plot_v1(df: pd.DataFrame):
     # Show plot
     st.plotly_chart(fig, use_container_width=True, config=config)
 
-
+def section_show_annotation_interface_v1(df: pd.DataFrame):
+    st.write("streamlit_pages.annotate_fit_helper.section_show_annotation_interface_v1() v4")
 
     
+if False:
+    # Able to have a checkbox as first column. check activities are stored
+    def dataframe_with_selections(df):
+        df_with_selections = df.copy()
+        df_with_selections.insert(0, "Select", False)
 
+        # Get dataframe row-selections from user with st.data_editor
+        edited_df = st.data_editor(
+            df_with_selections,
+            hide_index=True,
+            column_config={"Select": st.column_config.CheckboxColumn(required=True)},
+            disabled=df.columns,
+        )
+
+        st.write(edited_df.Select)
+        # Filter the dataframe using the temporary column, then drop the column
+        selected_rows = edited_df[edited_df.Select]
+        return selected_rows.drop('Select', axis=1)
+
+    st.write(dataframe_with_selections(df))
 
 
 def test1(df: pd.DataFrame):
