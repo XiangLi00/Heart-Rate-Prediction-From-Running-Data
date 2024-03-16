@@ -36,6 +36,6 @@ st.write("df columns: " + str(list(df.columns)))
 
 # st.write(f"annotate_fit – current working directory: {os.getcwd()}")
 
-_2024_03_10_annotate_fit_helper.section_show_plotly_timeseries_plot_v3(df)
+# _2024_03_10_annotate_fit_helper.section_show_plotly_timeseries_plot_v3(df)
 
-
+_2024_03_10_annotate_fit_helper.section_show_annotation_interface_v1(df)
