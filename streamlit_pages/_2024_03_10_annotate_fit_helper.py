@@ -17,6 +17,8 @@ from plotly.subplots import make_subplots
 import seaborn as sns
 import streamlit as st
 from streamlit_js_eval import streamlit_js_eval
+from streamlit_plotly_events import plotly_events
+
 
 from utils import helper_load_fit_file_v1, helper_load_specific_df, helper_pandas, helper_streamlit
 from utils.Activity import Activity
@@ -298,10 +300,13 @@ def section_plotly_widgets_interaction(df):
     fig.update_yaxes(fixedrange=True)
 
     # Set interactive behaviour and layout
-    fig = helper_streamlit.update_screen_height_of_fig_v2(fig, height_factor=0.9, debug=False)
+    #  fig = helper_streamlit.update_screen_height_of_fig_v2(fig, height_factor=0.7, debug=False). Does not work well with ptloyl_events. glitches
     fig.update_layout(
         dragmode='pan',  # zoom, pan, select, lasso
-        hovermode='x unified',  # Enable unified hover mode across all traces
+        # hovermode='x unified',  # Enable unified hover mode across all traces
     )
     # Show plot
-    st.plotly_chart(fig, use_container_width=True, config={'scrollZoom': True})
+    # st.plotly_chart(fig, use_container_width=True, config={'scrollZoom': True})
+
+    selected_points = plotly_events(fig, click_event=True, select_event=False, hover_event=False)
+    st.write(selected_points)

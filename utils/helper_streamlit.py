@@ -19,6 +19,8 @@ def get_screen_height_and_width():
     screen_width = streamlit_js_eval(js_expressions='screen.width', key='get_screen_width_javascript')
     return screen_height, screen_width
 
+
+
 def update_screen_height_of_fig_v2(fig: plotly.graph_objs.Figure, height_factor = 0.9, debug=False) -> plotly.graph_objs.Figure:
     screen_height, screen_width = get_screen_height_and_width()
     if debug:
