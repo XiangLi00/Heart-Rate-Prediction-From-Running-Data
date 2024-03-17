@@ -23,18 +23,23 @@ from streamlit_pages import _2024_03_10_annotate_fit_helper
 from utils import helper_load_fit_file_v1, helper_load_specific_df, helper_pandas, helper_streamlit
 # from utils.helper_load_df import load_df_v2, print_column_info_of_all_tables, get_column_info_of_specific_table, generate_report
 
+
+def do_stuff_on_page_load():
+    st.set_page_config(layout="wide")
+do_stuff_on_page_load()
+
 # Section: show and filter running activities
 df_activities, df_running_activities, df_running_activities_filtered = _2024_03_10_annotate_fit_helper.section_running_activities_show_and_filter()
 
 
 # Section: Select specific running activity and show tabular information
-df = _2024_03_10_annotate_fit_helper.section_select_activity_and_retrieve_df(df_activities)
-# View df
-st.dataframe(df)
-st.write("df columns: " + str(list(df.columns)))
+df = _2024_03_10_annotate_fit_helper.section_select_activity_and_retrieve_df(
+    df_activities,
+    df_loading_method = ["load_fit_file_v1", "activity_init"][1])
+
+_2024_03_10_annotate_fit_helper.display_df(df, option="column_names")
 
 
-# st.write(f"annotate_fit – current working directory: {os.getcwd()}")
+# _2024_03_10_annotate_fit_helper.section_show_plotly_timeseries_plot_v3(df)
 
-_2024_03_10_annotate_fit_helper.section_show_plotly_timeseries_plot_v3(df)
-
+_2024_03_10_annotate_fit_helper.section_plotly_widgets_interaction(df)
