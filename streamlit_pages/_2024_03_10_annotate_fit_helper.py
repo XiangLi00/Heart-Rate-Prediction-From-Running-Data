@@ -225,10 +225,25 @@ def section_show_plotly_timeseries_plot_v1(df: pd.DataFrame):
     # Show plot
     st.plotly_chart(fig, use_container_width=True, config=config)
 
-def section_show_annotation_interface_v1(df: pd.DataFrame):
-    st.write("streamlit_pages.annotate_fit_helper.section_show_annotation_interface_v1() v4")
+def section_try_input_1_buttons(df: pd.DataFrame = None):
 
+    if "button11" not in st.session_state:
+        st.session_state.button11 = False
     
+    def on_button1_clicked():
+        st.session_state.button11 = True
+
+    def on_button33_reset():
+        st.session_state.button11 = False
+
+    button11 = st.button("Click me", help="This is a help text", disabled=False, key="button1", on_click=on_button1_clicked)
+    button22 = st.button("Click me. Button 2", help="This is a help text", disabled=False, key="button2")
+    button33_reset = st.button("Reset button11" , help="This is a help text", disabled=False, key="button3", on_click=on_button33_reset)
+
+
+    st.write(f'button1: {st.session_state.button11} button 2: {button22} button 3: {button33_reset}')
+
+
 if False:
     # Able to have a checkbox as first column. check activities are stored
     def dataframe_with_selections(df):

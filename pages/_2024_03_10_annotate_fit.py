@@ -26,9 +26,9 @@ from utils import helper_load_fit_file_v1, helper_load_specific_df, helper_panda
 # Section: show and filter running activities
 df_activities, df_running_activities, df_running_activities_filtered = _2024_03_10_annotate_fit_helper.section_running_activities_show_and_filter()
 
+
 # Section: Select specific running activity and show tabular information
 df = _2024_03_10_annotate_fit_helper.section_select_activity_and_retrieve_df(df_activities)
-
 # View df
 st.dataframe(df)
 st.write("df columns: " + str(list(df.columns)))
@@ -36,6 +36,5 @@ st.write("df columns: " + str(list(df.columns)))
 
 # st.write(f"annotate_fit – current working directory: {os.getcwd()}")
 
-# _2024_03_10_annotate_fit_helper.section_show_plotly_timeseries_plot_v3(df)
+_2024_03_10_annotate_fit_helper.section_show_plotly_timeseries_plot_v3(df)
 
-_2024_03_10_annotate_fit_helper.section_show_annotation_interface_v1(df)
