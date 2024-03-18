@@ -52,7 +52,7 @@ def section_select_activity_and_retrieve_df(
     ):
     st.header("View specific activity")
     # Select specific activity
-    activity_id = st.text_input("Enter activity id", value="14057922527", key="activity_id")
+    activity_id = st.text_input("Enter activity id", value="14361204813", key="activity_id") # hill reps=14057922527
 
     if False:  # Alternative to use drpdown menu
         list_activity_ids = df_activities["activity_id"].unique().tolist()
@@ -102,8 +102,201 @@ def display_df(df, option="column_names"):
     if option == "column_names":
         st.write("df columns: " + str(list(df.columns)))
 
+@st.cache_data
+def section_get_plotly_timeseries_fig_v4(df: pd.DataFrame, activity_id: str):
+    fig = make_subplots(rows=1, cols=1, 
+                        shared_xaxes=True, shared_yaxes=False, 
+                        specs=[[{"secondary_y": True}],],
+                        vertical_spacing=0.03
+                        )
+    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["hr"], mode='lines', name='HR', line=dict(color='red', width=3)),
+                  row=1,col=1, secondary_y=False)
+    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["gaspeed"], mode='lines', name='GAP', line=dict(color='blue', dash="solid")),
+                  row=1, col=1, secondary_y=True)
+    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["power"]/25, mode='lines', name='Power', line=dict(color='lightpink')),
+                  row=1, col=1, secondary_y=True)
+
+    # Ticks and lines for each tick
+    array_pace_ticks = np.array([4,5,6,7,8,10])  # paces for which to display ticks
+    array_hr_ticks = np.array([120, 140, 150, 160, 170, 180])  # hr values for which to display ticks
+    fig.update_yaxes(
+        gridcolor='deeppink',
+        griddash=["solid", "dot", "dash", "longdash", "dashdot", "longdashdot"][1],
+        gridwidth=2,
+        tickvals=array_hr_ticks,  # display ticks at these values
+        secondary_y=False,
+    )
+    fig.update_yaxes(
+        gridcolor='green',
+        griddash = ["solid", "dot", "dash", "longdash", "dashdot", "longdashdot"][3],
+        gridwidth=2,
+        tickvals=60/array_pace_ticks,  # convert pace to km/h
+        ticktext=array_pace_ticks,
+        secondary_y=True,
+    )
+
+    # Set y-axis titles/range
+    fig.update_yaxes(range=[100, 200], title_text="HR", row=1, col=1, secondary_y=False) 
+    fig.update_yaxes(range=[0, 17], title_text="Pace", row=1, col=1, secondary_y=True) 
+    fig.update_yaxes(fixedrange=True)
+
+    # Set interactive behaviour and layout
+    # fig = helper_streamlit.update_screen_height_of_fig_v2(fig, height_factor=0.8, debug=False) # Does not work well with ptloyl_events. glitches
+    fig = helper_streamlit.update_screen_height_of_fig_v3(
+        fig=fig,
+        screen_height=st.session_state.screen_height,
+        screen_width=st.session_state.screen_width,
+        height_factor=0.8,
+        debug=False
+    )
+    fig.update_layout(
+        dragmode='pan',  # zoom, pan, select, lasso
+        hovermode='x unified',  # Enable unified hover mode across all traces
+        # legend=dict(orientation="h")
+        legend=dict(x=0.80, y=0.02)
+    )
+    # st.plotly_chart(fig, use_container_width=True, config={'scrollZoom': True})
+
+    return fig
+def section_show_plotly_timeseries_plot_v3_5(df: pd.DataFrame):
+    # Purpose: Experimental. trying out some widget interactions as well
+
+    fig = make_subplots(rows=1, cols=1, 
+                        shared_xaxes=True, shared_yaxes=False, 
+                        specs=[[{"secondary_y": True}],],
+                        vertical_spacing=0.03
+                        )
+    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["hr"], mode='lines', name='Heart Rate', line=dict(color='red', width=3)),
+                  row=1,col=1, secondary_y=False)
+    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["gaspeed"], mode='lines', name='GAP', line=dict(color='blue', dash="solid")),
+                  row=1, col=1, secondary_y=True)
+    #fig.add_trace(go.Scatter(x=df["timestamp"], y=df["speed_garmin"], mode='lines', name='Speed (Garmin)', line=dict(color='gray')),row=1, col=1, secondary_y=True)
+    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["power"]/30, mode='lines', name='Power', line=dict(color='lightpink')),
+                  row=1, col=1, secondary_y=True)
+    #fig.add_trace(go.Scatter(x=df["timestamp"], y=df["grade"], mode='lines', name='grade', line=dict(color='grey')),                 row=1, col=1, secondary_y=False)
+    # fig.add_trace(go.Scatter(x=df["timestamp"], y=df["elevation_change_raw"]*20, mode='markers', name='elevation_change_raw', line=dict(color='lightgrey')),                 row=1, col=1, secondary_y=False)
+    #fig.add_trace(go.Scatter(x=df["timestamp"], y=df["distance_raw"]*3.6, mode='markers', name='distance', line=dict(color='lightgrey')),                 row=1, col=1, secondary_y=True)
+    # fig.add_trace(go.Scatter(x=df["timestamp"], y=df["distance_smoothed"]*5, mode='lines', name='distance_smoothed', line=dict(color='orange')),                 row=1, col=1, secondary_y=True)
+    #fig.add_trace(go.Scatter(x=df["timestamp"], y=df["speed"], mode='lines', name='speed', line=dict(color='cyan')),                 row=1, col=1, secondary_y=True)
+    #fig.add_trace(go.Scatter(x=df["timestamp"], y=df["speed_garmin"], mode='lines', name='speed_garmin', line=dict(color='blue')),                 row=1, col=1, secondary_y=True)
+
+    # fig.add_trace(go.Scatter(x=df["timestamp"], y=df["power"]/30, mode='lines', name='power', line=dict(color='red')),                 row=1, col=1, secondary_y=True)
+
+    # fig.add_trace(go.Scatter(x=df["timestamp"], y=df["steps_per_min"]/10, mode='lines', name='steps_per_min', line=dict(color='lightsteelblue')),                 row=1, col=1, secondary_y=True)
+
+    list_pace_ticks = np.array([4,5,6,7,8,10])  # paces for which to display ticks
+    list_hr_ticks = np.array([120, 140, 150, 160, 170, 180])  # paces for which to display ticks
+
+    # Update Axes
+    fig.update_yaxes(
+        gridcolor='deeppink',
+        griddash=["solid", "dot", "dash", "longdash", "dashdot", "longdashdot"][1],
+        gridwidth=2,
+        tickvals=list_hr_ticks,  
+        secondary_y=False,
+    )
+    fig.update_yaxes(
+        gridcolor='green',
+        griddash = ["solid", "dot", "dash", "longdash", "dashdot", "longdashdot"][3],
+        gridwidth=2,
+        tickvals=60/list_pace_ticks,  # convert pace to km/h
+        ticktext=list_pace_ticks,
+        secondary_y=True,
+    )
+    fig.update_yaxes(range=[100, 200], title_text="HR", row=1, col=1, secondary_y=False) 
+    fig.update_yaxes(range=[0, 17], title_text="Pace", row=1, col=1, secondary_y=True) 
+    fig.update_yaxes(fixedrange=True)
+
+
+    # Get figure layout
+    fig_layout = fig.full_figure_for_development(warn=False).layout
+    fig_xlim = fig_layout.xaxis.range
+    fig_ylim = fig_layout.yaxis.range
+    if False:
+        # Add rectangular background boxes marking times manually labeled
+        fig.add_shape(
+            type="rect",
+            x0=pd.to_datetime('2024-02-20 17:24:47+00:00'),
+            y0=fig_layout.yaxis.range[0],
+            x1=pd.to_datetime('2024-02-20 17:27:47+00:00'),
+            y1=fig_layout.yaxis.range[1],
+            fillcolor="blue",
+            opacity=0.1,
+            layer="below",
+        )
+
+
+    # Set interactive behaviour and layout
+    fig = helper_streamlit.update_screen_height_of_fig_v2(fig, height_factor=0.9, debug=False) # Does not work well with ptloyl_events. glitches
+    fig.update_layout(
+        dragmode='pan',  # zoom, pan, select, lasso
+        hovermode='x unified',  # Enable unified hover mode across all traces
+    )
+    # Show plot
+    fig_plotting_model = ["plotly_event_handler", "plotly_slider_v1"][1]
+    if fig_plotting_model == "plotly_event_handler":
+        # Recommendation: not use it
+        # Advantages: more or less built in
+        # + can retrieve value of ll lines at specified x
+        # Disadvantages:
+        # - does not work well with update_screen_height_of_fig_v2(fig, height_factor=0.7, debug=False). glitches. also hovermode='x unified' might need to be disabled?
+        # - there is a lag ("running") for 5s each time something is selected
+        # - unable to add config scrollzoom
+        # - additionl library
+        # how to use it. pass (plotly_elevents(fig) instead of st.plotly_chart(fig))
+        selected_plotly_point = plotly_events(fig, click_event=True, select_event=False, hover_event=False)
+        if len(selected_plotly_point) > 0:
+            selected_datetime = selected_plotly_point[0]["x"]
+            st.write(selected_datetime)
+        st.write(selected_plotly_point)
+    elif fig_plotting_model == "plotly_slider_v1":
+
+        st.plotly_chart(fig, use_container_width=True, config={'scrollZoom': True})
+
+        fig.add_shape(
+                type="rect",
+                x0=pd.to_datetime('2024-03-09 11:55+00:00'),
+                y0=fig_layout.yaxis.range[0],
+                x1=pd.to_datetime('2024-03-09 11:56+00:00'),
+                y1=fig_layout.yaxis.range[1],
+                fillcolor="yellow",
+                opacity=0.1,
+                layer="below",
+            )
+        st.plotly_chart(fig, use_container_width=True, config={'scrollZoom': True})
+
+
+        def datetime_range_slider_on_change():
+            start_datetime = st.session_state.datetime_range_slider[0]
+            end_datetime = st.session_state.datetime_range_slider[1]
+            fig.add_shape(
+                type="rect",
+                x0=start_datetime,
+                y0=fig_layout.yaxis.range[0],
+                x1=end_datetime,
+                y1=fig_layout.yaxis.range[1],
+                fillcolor="yellow",
+                opacity=0.1,
+                layer="below",
+            )
+
+            st.plotly_chart(fig, use_container_width=True, config={'scrollZoom': True})
+
+
+        st.select_slider(
+            'Select a range of color wavelength',
+            options=df.timestamp,
+            value=(df.timestamp.iloc[0], df.timestamp.iloc[-1]),
+            key="datetime_range_slider",
+            on_change=datetime_range_slider_on_change
+        )
+
+        st.write(st.session_state)
+
 
 def section_show_plotly_timeseries_plot_v3(df: pd.DataFrame):
+    # Purpose: exploring
+
     fig = make_subplots(rows=3, cols=1, 
                         shared_xaxes=True, shared_yaxes=False, 
                         specs=[[{"secondary_y": True}], [{"secondary_y": True}], [{"secondary_y": True}],],
@@ -269,44 +462,3 @@ def section_show_plotly_timeseries_plot_v1(df: pd.DataFrame):
 
 
 
-def section_plotly_widgets_interaction(df):
-
-    fig = make_subplots(rows=1, cols=1, 
-                        shared_xaxes=True, shared_yaxes=False, 
-                        specs=[[{"secondary_y": True}],],
-                        vertical_spacing=0.03
-                        )
-
-    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["grade"], mode='lines', name='grade', line=dict(color='grey')),                 row=1, col=1, secondary_y=False)
-    # fig.add_trace(go.Scatter(x=df["timestamp"], y=df["elevation_change_raw"]*20, mode='markers', name='elevation_change_raw', line=dict(color='lightgrey')),                 row=1, col=1, secondary_y=False)
-    #fig.add_trace(go.Scatter(x=df["timestamp"], y=df["distance_raw"]*3.6, mode='markers', name='distance', line=dict(color='lightgrey')),                 row=1, col=1, secondary_y=True)
-    # fig.add_trace(go.Scatter(x=df["timestamp"], y=df["distance_smoothed"]*5, mode='lines', name='distance_smoothed', line=dict(color='orange')),                 row=1, col=1, secondary_y=True)
-    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["speed"], mode='lines', name='speed', line=dict(color='cyan')),                 row=1, col=1, secondary_y=True)
-    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["speed_garmin"], mode='lines', name='speed_garmin', line=dict(color='blue')),                 row=1, col=1, secondary_y=True)
-
-    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["power"]/30, mode='lines', name='power', line=dict(color='red')),                 row=1, col=1, secondary_y=True)
-    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["gaspeed"], mode='lines', name='gaspeed', line=dict(color='black')),                 row=1, col=1, secondary_y=True)
-    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["steps_per_min"]/10, mode='lines', name='steps_per_min', line=dict(color='lightsteelblue')),                 row=1, col=1, secondary_y=True)
-
-
-    if False: 
-        pass
-        # Set y-axis titles
-        fig.update_yaxes(title_text="HR", row=1, col=1, secondary_y=False)
-        fig.update_yaxes(range=[math.log10(15), math.log10(3)], title_text="Pace",  type="log", row=1, col=1,secondary_y=True) # , type="log",autorange="reversed",  ,autorange="reversed"
-        fig.update_yaxes(title_text="Altitude", secondary_y=False, row=2, col=1)
-        fig.update_yaxes(range=[150, 200], title_text="Cadence", secondary_y=True, row=2, col=1)
-    fig.update_yaxes(range=[0, 20], title_text="e", row=1, col=1, secondary_y=True) 
-    fig.update_yaxes(fixedrange=True)
-
-    # Set interactive behaviour and layout
-    #  fig = helper_streamlit.update_screen_height_of_fig_v2(fig, height_factor=0.7, debug=False). Does not work well with ptloyl_events. glitches
-    fig.update_layout(
-        dragmode='pan',  # zoom, pan, select, lasso
-        # hovermode='x unified',  # Enable unified hover mode across all traces
-    )
-    # Show plot
-    # st.plotly_chart(fig, use_container_width=True, config={'scrollZoom': True})
-
-    selected_points = plotly_events(fig, click_event=True, select_event=False, hover_event=False)
-    st.write(selected_points)

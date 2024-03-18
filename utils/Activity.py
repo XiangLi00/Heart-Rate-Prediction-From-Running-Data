@@ -17,7 +17,7 @@ import helper_pandas
 
 class Activity():
 
-    def __init__(self, id: int, config: Dict[str, Any], project_path: str) -> None:
+    def __init__(self, id: int, config: Dict[str, Any], project_path: str, add_experimental_columns = True) -> None:
         self.id = id
         self.config = config
         self.df_special_col_names = pd.DataFrame()
@@ -122,6 +122,14 @@ class Activity():
         self.df["gaspeed"] = self.df["speed"] * spline_object(self.df["grade"])
  
 
+        if add_experimental_columns:
+            self.df["gaspeed4"] = np.maximum(4, self.df["gaspeed"]) 
+            # Add exponential weighted moving average columns
+            variable_to_smoothen_exponentially = ["gaspeed4"]
+            list_ew_spans_in_s = [30, 100]
+            for variable in variable_to_smoothen_exponentially:
+                for ew_span in list_ew_spans_in_s:
+                    self.df[f"{variable}_ew_{ew_span}s"] = self.df[variable].ewm(span=ew_span).mean()
 
         # Assert that most columns are imputed
         self.df = helper_pandas.impute_drop_or_assert_columns(

@@ -113,4 +113,10 @@ def section_try_input_3():
             horizontal=st.session_state.horizontal,
         )
 
-section_try_input_2()
+def section_try_input_4():
+    start_color, end_color = st.select_slider(
+        'Select a range of color wavelength',
+        options=['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet'],
+        value=('orange', 'blue'))
+    st.write('You selected wavelengths between', start_color, 'and', end_color)
+section_try_input_4()

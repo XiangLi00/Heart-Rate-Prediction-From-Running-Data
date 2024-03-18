@@ -33,6 +33,16 @@ def update_screen_height_of_fig_v2(fig: plotly.graph_objs.Figure, height_factor 
             st.write(f"TypeError in helper_streamlit.update_screen_height_of_fig_v2(). Could not update screen height. It still has the default value screeen_height = {screen_height}.")
     return fig
 
+def update_screen_height_of_fig_v3(fig: plotly.graph_objs.Figure, screen_height: int = 800, screen_width: int = 1000, height_factor = 0.9, debug=False) -> plotly.graph_objs.Figure:
+    if debug:
+        st.write(f"screen_height: {screen_height}, screen_width: {screen_width}, type_screen_height: {type(screen_height)}")
+
+    if screen_height is not None:
+        try:
+            fig.update_layout(height=screen_height*height_factor)
+        except TypeError:
+            st.write(f"TypeError in helper_streamlit.update_screen_height_of_fig_v2(). Could not update screen height. It still has the default value screeen_height = {screen_height}.")
+    return fig
 
 
 def add_df_activities_filtering_ui(df: pd.DataFrame) -> pd.DataFrame:
@@ -50,7 +60,7 @@ def add_df_activities_filtering_ui(df: pd.DataFrame) -> pd.DataFrame:
     Returns:
         pd.DataFrame: Filtered dataframe
     """
-    modify = st.checkbox("Add filters")
+    modify = st.checkbox("Add filters", value=True)
 
     if not modify:
         return df
@@ -140,7 +150,7 @@ def add_df_activities_filtering_ui(df: pd.DataFrame) -> pd.DataFrame:
 
     return df
 
-def add_df_filtering_ui(df: pd.DataFrame) -> pd.DataFrame:
+def add_df_filtering_ui_generic(df: pd.DataFrame) -> pd.DataFrame:
     """
     Adds a generic UI on top of a dataframe to let viewers filter columns
     Source: https://blog.streamlit.io/auto-generate-a-dataframe-filtering-ui-in-streamlit-with-filter_dataframe/
@@ -217,3 +227,8 @@ def add_df_filtering_ui(df: pd.DataFrame) -> pd.DataFrame:
                     df = df[df[column].str.contains(user_text_input)]
 
     return df
+
+@st.cache_data
+def df_to_csv(df):
+    # IMPORTANT: Cache the conversion to prevent computation on every rerun
+    return df.to_csv().encode('utf-8')
