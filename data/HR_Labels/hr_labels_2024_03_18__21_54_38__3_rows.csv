@@ -1,0 +1,4 @@
+activity_id,hr_accuracy_in_segment,hr_accuracy_entire_activity,timestamp_start,timestamp_end
+14361204813,perfect,use_all,2024-03-09 11:54:08+00:00,2024-03-09 11:59:43+00:00
+14361204813,medium,mixed,2024-03-09 11:54:08+00:00,2024-03-09 11:59:43+00:00
+13963180260,perfect,use_all,2024-02-14 17:28:10+00:00,2024-02-14 18:20:27+00:00

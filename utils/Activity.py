@@ -62,6 +62,7 @@ class Activity():
             "vertical_ratio": ["no_imputation", "drop"][1],
             "stance_time_balance": "drop",
             "stance_time_percent": "drop",
+            "temperature": "drop",
         }
 
         # Impute, drop, and assert that most columns are imputed
@@ -123,9 +124,10 @@ class Activity():
  
 
         if add_experimental_columns:
-            self.df["gaspeed4"] = np.maximum(4, self.df["gaspeed"]) 
+            self.df["gaspeed4"] = np.maximum(4, self.df["gaspeed"])
+            self.df["power100"] = np.maximum(100, self.df["power"])  
             # Add exponential weighted moving average columns
-            variable_to_smoothen_exponentially = ["gaspeed4"]
+            variable_to_smoothen_exponentially = ["gaspeed4", "power100"]
             list_ew_spans_in_s = [30, 100]
             for variable in variable_to_smoothen_exponentially:
                 for ew_span in list_ew_spans_in_s:

@@ -52,7 +52,9 @@ def section_select_activity_and_retrieve_df(
     ):
     st.header("View specific activity")
     # Select specific activity
-    activity_id = st.text_input("Enter activity id", value="14361204813", key="activity_id") # hill reps=14057922527
+    if not "activity_id" in st.session_state:
+        st.session_state.activity_id = "14361204813"
+    activity_id = st.text_input("Enter activity id", key="activity_id") # hill reps=14057922527
 
     if False:  # Alternative to use drpdown menu
         list_activity_ids = df_activities["activity_id"].unique().tolist()
@@ -110,8 +112,10 @@ def section_get_plotly_timeseries_fig_v4(_df: pd.DataFrame, activity_id: str, pl
                   row=1, col=1, secondary_y=True)
     fig.add_trace(go.Scatter(x=df["timestamp"], y=df["gaspeed4_ew_100s"], mode='lines', name='GAP4 ew 100s', line=dict(color='blue', dash="solid")),
                   row=1, col=1, secondary_y=True)
-    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["power"]/25, mode='lines', name='Power', line=dict(color='lightpink')),
+    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["power"]/25, mode='lines', name='Power', line=dict(color='lightpink', dash="dash")),
                   row=1, col=1, secondary_y=True)
+    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["power100_ew_100s"]/25, mode='lines', name='Power ew 100s', line=dict(color='coral')),
+                row=1, col=1, secondary_y=True)
 
     # Ticks and lines for each tick
     array_pace_ticks = np.array([4,5,6,7,8,10])  # paces for which to display ticks
@@ -136,6 +140,7 @@ def section_get_plotly_timeseries_fig_v4(_df: pd.DataFrame, activity_id: str, pl
     fig.update_yaxes(range=[100, 200], row=1, col=1, secondary_y=False) 
     fig.update_yaxes(range=[0, 17], row=1, col=1, secondary_y=True) 
     fig.update_yaxes(fixedrange=True)
+    fig.update_xaxes(range=[df["timestamp"].iloc[0], df["timestamp"].iloc[-1]])
 
     # Set interactive behaviour and layout
     # fig = helper_streamlit.update_screen_height_of_fig_v2(fig, height_factor=0.8, debug=False) # Does not work well with ptloyl_events. glitches
