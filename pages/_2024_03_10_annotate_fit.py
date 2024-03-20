@@ -68,6 +68,7 @@ if "df_hr_accuracy_labels" not in st.session_state:
 
 # Display df_hr_accuracy_labels
 st.data_editor(st.session_state.df_hr_accuracy_labels.sort_index(ascending=False))
+#st.data_editor(st.session_state.df_hr_accuracy_labels.sort_values(by="timestamp_start", ascending=False))
 if "df_hr_accuracy_labels" not in st.session_state:
     st.session_state.csv_hr_accuracy_labels 
 
