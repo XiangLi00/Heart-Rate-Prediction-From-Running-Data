@@ -209,6 +209,36 @@ class Activity():
         self.df_special_col_names = pd.concat([self.df_special_col_names, pd.DataFrame(list_for_creating_df_special_col_names)], axis=0, ignore_index=True)
 
 
+    def add_column_hr_acc_label(self, df_labels: pd.DataFrame) -> None:
+        """
+        Add a column hr_acc_label ("perfect", "medium", "wrong") to self.df, labeling how reliable the HR data is
+
+        Uses label information from df_labels
+        Logic: If no information is given about this time, then assume it's perfect. If it says "wrong" then it is wrong. Otherwise, it's medium.
+
+        Args:
+        - df_labels (pd.DataFrame): The dataframe containing the labels for the activity. Needs columns activity_id(int), timestamp_start(timestamp), timestamp_end(timestamp), hr_accuracy_in_segment(str: "perfect", "medium", "wrong")
+        """
+
+        activity_id = int(self.id)
+
+        # Raise error if this activity was not labeled
+        if len(df_labels.query('activity_id == @activity_id')) == 0:
+            raise ValueError(f"The activity_id {activity_id} was not labeled (in df_labels). Only activities {df_labels['activity_id'].unique()} were labeled.")
+
+        self.df = self.df.set_index("timestamp")
+
+        self.df["hr_acc_label"] = "perfect"
+        sorted_accuracy_labels = ["medium", "wrong"]
+        for accuracy_label in sorted_accuracy_labels:
+            df_labels_this_act = df_labels.query('activity_id == @activity_id and hr_accuracy_in_segment == @accuracy_label ')
+            # use iterrows to get timestamp_start and timestamp_end
+            for index, row in df_labels_this_act.iterrows():
+                self.df.loc[row['timestamp_start']:row['timestamp_end'], "hr_acc_label"] = accuracy_label
+
+        self.df = self.df.reset_index()
+
+
 def resample_each_second_and_add_imputed_column(df: pd.DataFrame) -> pd.DataFrame:
     """
     Resamples the dataframe to have a row for each second, filling in missing rows with NaNs.
