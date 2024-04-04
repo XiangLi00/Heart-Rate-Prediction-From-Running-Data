@@ -27,8 +27,12 @@ project_path = os.getcwd()
 
 
 def do_stuff_on_page_load():
+    # Make sure that page elements use the full page width
     st.set_page_config(layout="wide")
-    st.session_state.screen_height, st.session_state.screen_width = helper_streamlit.get_screen_height_and_width()  # retrieve screen heigh, width in pixels
+    
+    # Retrieve screen heigh, width in pixels
+    st.session_state.screen_height, st.session_state.screen_width = helper_streamlit.get_screen_height_and_width()  
+    
     if not "columns_df_hr_accuracy_labels" in st.session_state:
         st.session_state.columns_df_hr_accuracy_labels = ["activity_id", "hr_accuracy_in_segment", "hr_accuracy_entire_activity", "timestamp_start", "timestamp_end"]
 do_stuff_on_page_load()
