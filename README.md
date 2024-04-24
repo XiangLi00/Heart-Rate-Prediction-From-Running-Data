@@ -15,6 +15,6 @@ To ensure data quality, I manually labeled periods where the heart rate sensor r
 4. **Results**: Achieved a Mean Absolute Error of approximately 6 beats per minute on validation running activities.
 
 ## Web App Deployment
-For a hands-on experience with the heart rate predictions and to delve into more technical details, visit the interactive Streamlit web app [https://garmin-data-analysis-cytltvwaipppccwsskzvnb.streamlit.app/](https://garmin-data-analysis-cytltvwaipppccwsskzvnb.streamlit.app/). The app also offers a user-friendly interface for data labeling.
+For a hands-on experience with the heart rate predictions and to delve into more technical details, visit the interactive Streamlit web app [https://heart-rate-prediction-from-running-data-lvhkpmifujir4evsmsxjpb.streamlit.app/](https://heart-rate-prediction-from-running-data-lvhkpmifujir4evsmsxjpb.streamlit.app/). The app also offers a user-friendly interface for data labeling.
 
 Feel free to reach out with any questions or feedback!
