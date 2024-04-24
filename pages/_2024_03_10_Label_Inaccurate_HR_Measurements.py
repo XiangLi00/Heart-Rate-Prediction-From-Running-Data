@@ -55,7 +55,7 @@ str_markdown_explanation = """
 - This can be done for the entire duration of the activity or for specific time ranges
 
 """
-with st.expander("Explanation of the project"):
+with st.expander("Explanation of the data labeling procedure"):
     st.markdown(str_markdown_explanation)
 
 

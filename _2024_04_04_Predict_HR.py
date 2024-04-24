@@ -82,6 +82,9 @@ str_markdown_explanation = """
 - Use a more sophisticated formula for gradient adjusted speed (e.g., https://medium.com/strava-engineering/an-improved-gap-model-8b07ae8886c3)
 - Include test activities to evaluate test performance
 
+## Github Repository
+- [https://github.com/XiangLi00/Heart-Rate-Prediction-From-Running-Data](https://github.com/XiangLi00/Heart-Rate-Prediction-From-Running-Data)
+
 """
 with st.expander("Explanation of the project"):
     st.markdown(str_markdown_explanation)
