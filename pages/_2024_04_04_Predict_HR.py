@@ -19,6 +19,7 @@ import sklearn
 import streamlit as st
 from streamlit_js_eval import streamlit_js_eval
 
+sys.path.append(os.getcwd()) 
 sys.path.append(os.path.join(os.getcwd(), 'streamlit_pages'))  
 # from streamlit_pages._2024_03_18_annotate_fit_helper_v2 import test1
 from streamlit_pages import _2024_04_04_predict_hr_helper_v1
