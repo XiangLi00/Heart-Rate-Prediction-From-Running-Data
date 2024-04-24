@@ -22,7 +22,7 @@ sys.path.append(os.path.join(os.getcwd(), 'utils'))
 
 action = 3
 
-#Prints a specific function in the.py page 
+# Prints a specific function in the.py page 
 if action == 1:
     from streamlit_pages._2024_02_28__weeks_summary import page3
     #from _2024_02_28__debug_streamlit_community import page3
@@ -44,6 +44,7 @@ if action == 2:
     module = importlib.import_module("streamlit_pages." + module_name) # fancy way of writing "import streamlit_pages._2024_02_28__weeks_summary"
 
 # Dropdown menu to select the page to display
+# Possible options: the .py files in subfolder stramlit_pages
 if action == 3:
     #st.write(os.getcwd())
 
@@ -59,4 +60,4 @@ if action == 3:
     importlib.import_module("streamlit_pages." + streamlit_page_displayed) 
 
 
-#st.write("app2.py: v4")
+# st.write("app2.py: v4")

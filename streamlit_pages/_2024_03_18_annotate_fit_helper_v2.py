@@ -51,24 +51,27 @@ def section_select_activity_and_retrieve_df(
         df_loading_method = ["load_fit_file_v1", "activity_init"][0]
     ):
     st.header("View specific activity")
-    # Select specific activity
-    if not "activity_id" in st.session_state:
-        st.session_state.activity_id = "14361204813"
-    activity_id = st.text_input("Enter activity id", key="activity_id") # hill reps=14057922527
 
-    if False:  # Alternative to use drpdown menu
+
+    if True:  # Alternative to use dropdown menu
         list_activity_ids = df_activities["activity_id"].unique().tolist()
-        activity_id = st.selectbox("Select activity id", list_activity_ids)
-    if st.session_state.activity_id not in df_activities["activity_id"].values:
-        st.error(f"Activity id '{activity_id}' not found")
+        list_activity_ids_of_long_running_activities = df_activities.query("sport == 'running' and sub_sport=='generic' and distance >= 5").activity_id.unique().tolist()
+        st.selectbox("Select activity id", list_activity_ids_of_long_running_activities, key="activity_id_for_labeling", index=7)
+    if False:  # Alternative to enter activity id manually
+            # Select specific activity
+        if not "activity_id" in st.session_state:
+            st.session_state.activity_id_for_labeling = 14441010384
+        activity_id = st.text_input("Enter activity id", key="activity_id") # hill reps=14057922527
+        if st.session_state.activity_id_for_labeling not in df_activities["activity_id"].values:
+            st.error(f"Activity id '{activity_id}' not found. Please copy and paste a valid activity id from the table above.", icon="🚨")
 
     if True:
         # ser_activity_overview = df_activities.query('activity_id == @activity_id').squeeze()
-        ser_activity_overview = df_activities.query('activity_id == @activity_id').squeeze()
+        ser_activity_overview = df_activities.query('activity_id == @st.session_state.activity_id_for_labeling').squeeze()
 
         # Display general information about the activity
         if display_df_overview_option == "single_line_df":
-            st.dataframe(df_activities.query('activity_id == @activity_id'))
+            st.dataframe(df_activities.query('activity_id == @st.session_state.activity_id_for_labeling'))
         elif display_df_overview_option == "pretty_selected_information":
             cols_activity_overview = st.columns(4)
             
@@ -82,7 +85,7 @@ def section_select_activity_and_retrieve_df(
 
     # Load the fit file for this activity
     if df_loading_method == "load_fit_file_v1":
-        path_fit_file = os.path.join(project_path, 'data', 'FitFiles', 'Activities', f'{activity_id}_ACTIVITY.fit')
+        path_fit_file = os.path.join(project_path, 'data', 'FitFiles', 'Activities', f'{st.session_state.activity_id_for_labeling}_ACTIVITY.fit')
         df = helper_load_fit_file_v1.load_fit_file(path_fit_file)
     elif df_loading_method == "activity_init":
         config = dict()
@@ -92,7 +95,7 @@ def section_select_activity_and_retrieve_df(
         config["df__grade__delta_distance_for_grade_computation"] = 10  # [m], Computes grade := (delta elevation_change / delta distance), over the last e.g. >=5m distance. Can't make it too large (100m) because then the grade informtion will lag behind ~100m/2. Need it to be >0.5 because otherwise small delta distance can create a lot of noisy/huge grades.
         config["df__keep_raw_elevation_distance_columns_for_debugging"] = True
 
-        df = Activity(id=activity_id, project_path=project_path, config=config).df 
+        df = Activity(id=st.session_state.activity_id_for_labeling, project_path=project_path, config=config).df 
 
     return df
 
@@ -106,15 +109,15 @@ def section_get_plotly_timeseries_fig_v4(_df: pd.DataFrame, activity_id: str, pl
                         specs=[[{"secondary_y": True}],],
                         vertical_spacing=0.03
                         )
-    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["hr"], mode='lines', name='HR', line=dict(color='red', width=3)),
+    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["hr"], mode='lines', name='Heart Rate (measured)', line=dict(color='red', width=3)),
                   row=1,col=1, secondary_y=False)
-    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["gaspeed"], mode='lines', name='GAP', line=dict(color='cornflowerblue', dash="dash")),
+    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["gaspeed"], mode='lines', name='Gradient Adjusted Pace [min/km]', line=dict(color='cornflowerblue', dash="dash")),
                   row=1, col=1, secondary_y=True)
-    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["gaspeed4_ew_100s"], mode='lines', name='GAP4 ew 100s', line=dict(color='blue', dash="solid")),
+    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["gaspeed4_ew_100s"], mode='lines', name='Gradient Adjusted Pace (exp. smoothed with span=100s) [min/km]', line=dict(color='blue', dash="solid")),
                   row=1, col=1, secondary_y=True)
-    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["power"]/25, mode='lines', name='Power', line=dict(color='lightpink', dash="dash")),
+    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["power"]/25, mode='lines', name='Power [W]', line=dict(color='lightpink', dash="dash")),
                   row=1, col=1, secondary_y=True)
-    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["power100_ew_100s"]/25, mode='lines', name='Power ew 100s', line=dict(color='coral')),
+    fig.add_trace(go.Scatter(x=df["timestamp"], y=df["power100_ew_100s"]/25, mode='lines', name='Power (exp. smoothed with span=100s) [W]', line=dict(color='coral')),
                 row=1, col=1, secondary_y=True)
 
     # Ticks and lines for each tick
@@ -184,7 +187,7 @@ def section_upload_existing_df_hr_accuracy_labels():
             st.subheader("Reset existing labels")
             # Add button for resetting df_hr_accuracy_labels for this activity id
             def button_drop_all_row_for_this_activity_from_df_hr_accuracy_labels_on_click():
-                st.session_state.df_hr_accuracy_labels = st.session_state.df_hr_accuracy_labels.query("activity_id != @st.session_state.activity_id")
+                st.session_state.df_hr_accuracy_labels = st.session_state.df_hr_accuracy_labels.query("activity_id != @st.session_state.activity_id_for_labeling")
             st.button(":black[Reset all labels for this activity]", key="button_drop_all_row_for_this_activity_from_df_hr_accuracy_labels", on_click=button_drop_all_row_for_this_activity_from_df_hr_accuracy_labels_on_click)
 
             # Add button for resetting df_hr_accuracy_labels completly
@@ -233,7 +236,7 @@ def section_slider_datetime_selection_and_add_colored_background_to_fig(fig: plo
 
     # Mark labeled time range with red/orange/green background
     if "df_hr_accuracy_labels" in st.session_state:
-        df_labels_this_activity = st.session_state.df_hr_accuracy_labels.query("activity_id == @st.session_state.activity_id")
+        df_labels_this_activity = st.session_state.df_hr_accuracy_labels.query("activity_id == @st.session_state.activity_id_for_labeling")
 
         for index, row in df_labels_this_activity.iterrows():
             if row.hr_accuracy_in_segment == "perfect":
@@ -286,7 +289,7 @@ def section_ui_to_add_manual_labels(df: pd.DataFrame, project_path: str = os.get
                         raise ValueError(f"Unexpected value for st.session_state.radio_hr_accuracy_entire_activity: {st.session_state.radio_hr_accuracy_entire_activity}")
 
                     dict_row_hr_accuracy_labels = {
-                        "activity_id": st.session_state.activity_id,
+                        "activity_id": st.session_state.activity_id_for_labeling,
                         "hr_accuracy_in_segment": hr_accuracy_in_segment, # Automatically added since we did not save it for the entire activity. 
                         "hr_accuracy_entire_activity": st.session_state.radio_hr_accuracy_entire_activity,  # mixed <=> specify it for each timestamp individully. 
                         "timestamp_start": df.timestamp.iloc[0],
@@ -332,7 +335,7 @@ def section_ui_to_add_manual_labels(df: pd.DataFrame, project_path: str = os.get
                 # Button for adding row to df about HR accruacy label in specified segment
                 def button_add_row_to_df_labels_about_activity_segment_on_click():
                     dict_row_hr_accuracy_labels = {
-                        "activity_id": st.session_state.activity_id,
+                        "activity_id": st.session_state.activity_id_for_labeling,
                         "hr_accuracy_in_segment": st.session_state.radio_hr_accuracy_in_segment,
                         "hr_accuracy_entire_activity": "mixed",  # Automatically added since we did not save it for the entire activity. mixed <=> specify it for each timestamp individully. 
                         "timestamp_start": st.session_state.datetime_range_slider[0],

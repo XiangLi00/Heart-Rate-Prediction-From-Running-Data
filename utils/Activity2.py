@@ -38,7 +38,7 @@ class Activity():
         config["df__distance__gaussian_kernel_sigma"] = 3  # [s], Applies Gaussian kernel to distance_raw column with this standard deviation
         config["df__keep_raw_elevation_distance_columns_for_debugging"] = True
         config["df__grade__delta_distance_for_grade_computation"] = 5  # [m], Computes grade := (delta elevation_change / delta distance), over the last e.g. >=5m distance. Can't make it too large (100m) because then the grade informtion will lag behind ~100m/2. Need it to be >0.5 because otherwise small delta distance can create a lot of noisy/huge grades.
-        config["df__rolling_avg_base_vars"] = ["gaspeed", "power"] # List[str]. Specify for which variables to compute rolling average
+        config["df__rolling_avg_base_vars"] = ["gaspeed", "power100"] # List[str]. Specify for which variables to compute rolling average
         config["df__rolling_avg_window_lengths"] = [10] * 6 + [20] * 6 + [60, 120, 180, 240] # List[int]. Specify for which previous seconds to computing rolling average. E.g. [10, 30] means: first use seconds 0-9 earlier, then use seconds 10-39 earlier. 
         
         return config
@@ -157,8 +157,8 @@ class Activity():
             self.df["gaspeed4"] = np.maximum(4, self.df["gaspeed"])
             self.df["power100"] = np.maximum(100, self.df["power"])  
             # Add exponential weighted moving average columns
-            variable_to_smoothen_exponentially = ["gaspeed4", "power100"]
-            list_ew_spans_in_s = [30, 100]
+            variable_to_smoothen_exponentially = ["gaspeed4", "power100", "gaspeed", "power"]
+            list_ew_spans_in_s = [10, 20, 30, 50, 75, 100, 125, 150, 190, 240, 300]
             for variable in variable_to_smoothen_exponentially:
                 for ew_span in list_ew_spans_in_s:
                     self.df[f"{variable}_ew_{ew_span}s"] = self.df[variable].ewm(span=ew_span).mean()

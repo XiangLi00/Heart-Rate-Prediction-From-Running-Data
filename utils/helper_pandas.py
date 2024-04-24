@@ -17,6 +17,30 @@ def move_columns_to_end(df, columns):
             df[col] = df.pop(col)
     return df
 
+def move_column_left_of_another_column(df, col_to_move, ref_col):
+    """
+    This function moves a column in a DataFrame just before another column.
+
+    Parameters:
+    df (pd.DataFrame): The DataFrame in which to move the columns.
+    col_to_move (str): The name of the column to move.
+    ref_col (str): The name of the column before which col_to_move should be placed.
+
+    Returns:
+    pd.DataFrame: The DataFrame with the columns reordered.
+    """
+    # Ensure the columns exist in the DataFrame
+    if col_to_move not in df.columns or ref_col not in df.columns:
+        raise ValueError(f"Columns {col_to_move} or {ref_col} not in DataFrame")
+
+    # Pop the column to move and store it in a variable
+    col_data = df.pop(col_to_move)
+
+    # Insert the column at the correct location
+    df.insert(df.columns.get_loc(ref_col), col_to_move, col_data)
+
+    return df
+
 def reorder_columns(df: pd.DataFrame, columns_desired_order: list[str]) -> pd.DataFrame:
     """
     Reorders the columns of a DataFrame according to a desired order.
